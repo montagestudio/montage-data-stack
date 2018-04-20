@@ -11,14 +11,14 @@
 
 1. Install 
 ```
-git clone git@github.com:user/repo.git
-cd repo
+git clone git@github.com:montagestudio/montage-data-stack.git
+cd montage-data-stack
 npm install
 ```
 
 2. Start
 ```
-npm start
+npm start:node
 ```
 
 3. Run Unit-Tests
