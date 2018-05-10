@@ -36,6 +36,10 @@ You can also open you browser to "https://localhost:8080" to see a basic Service
 
 ## Troubleshooting & Useful Tools
 
+
+### Links
+- https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/
+
 ### Start and deploy
 
 ```
@@ -65,7 +69,8 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
 ### Npm commands
  
  - `lint`: jshint . 
- - `start`: node index.js 
+ - `start:docker`: ./start-docker.sh
+ - `start:node`: node index.js 
  - `test`: mocha test --timeout 10000 --exit 
  - `integration`: concurrently \npm run serve:test\ \npm run open:test\ 
  - `doc`: concurrently \npm run serve:doc\ \npm run open:doc\ 
@@ -73,7 +78,11 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
  - `serve:doc`: http-server -p 8082 doc 
  - `open:app`: open http://localhost:8080 
  - `open:test`: open http://localhost:8081/test 
- - `open:doc`: open http://localhost:8082 
+ - `open:doc`: open http://localhost:8082  
+ - `open:pgadmin`: open http://localhost:5001 
+ - `open:pgheho`: open http://localhost:5002
+ - `open:kafka-manager`: open http://localhost:5003 
+ - `start:node`: node init 
  - `start:swarm`: docker swarm init 
  - `start:stack`: docker stack deploy -c docker-compose.yml 'message-stack' 
  - `stop:stack`: docker stack rm 'message-stack' 

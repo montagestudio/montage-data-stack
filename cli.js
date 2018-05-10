@@ -1,12 +1,16 @@
 #!/usr/bin/env node
+// Example:
+// node cli.js --fetchData '{ "root": { "prototype": "montage/data/model/data-query", "values": { "criteria": {}, "orderings": [], "prefetchExpressions": null, "typeModule": { "%": "data/descriptors/message.mjson" } } } }'
+var program = require('commander');
  
+var package = require('./package.json');
 var program = require('commander');
  
 program
-  .version('0.1.0')
+  .version(package.version)
   .option('-f, --fetchData [query]', 'fetch data')
-  .option('-f, --saveDataObject [query]', 'fetch data')
-  .option('-f, --fetchData [query]', 'fetch data')
+  .option('-s, --saveDataObject [object]', 'save data object')
+  .option('-d, --deleteDataObject [object]', 'delete data object')
   .parse(process.argv);
 
 // Load controller
@@ -14,21 +18,24 @@ var main = require('./main');
 
 var command;
 if (program.fetchData) {
-	command = main.fetchData({
-		query: program.fetchData
-	}).then(function (result) {
+
+	command = main.fetchData(program.fetchData).then(function (result) {
 		console.log(result);
+		process.exit(0);
 	});
 } else if (program.saveDataObject) {
-	command = main.saveDataObject({
-		query: program.saveDataObject
-	}).then(function (result) {
+	command = main.saveDataObject(program.saveDataObject).then(function (result) {
 		console.log(result);
+		process.exit(0);
 	});
 } else if (program.deleteDataObject) {
-	command = main.deleteDataObject({
-		query: program.deleteDataObject
-	}).then(function (result) {
+	command = main.deleteDataObject(program.deleteDataObject).then(function (result) {
 		console.log(result);
+		process.exit(0);
 	});
 }
+
+command.catch(function (err) {
+	console.error(err.stack || err);
+	process.exit(1);
+});

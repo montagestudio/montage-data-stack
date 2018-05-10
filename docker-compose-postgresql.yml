@@ -1,0 +1,20 @@
+version: '2'
+services:
+  db-service:
+    container_name: db-service
+    image: postgres:9.4
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - backend
+    environment:
+      POSTGRES_PASSWORD: psqlpass
+
+# Data volumes
+volumes:
+  db:
+
+# Default network
+networks:
+  frontend:
+  backend:

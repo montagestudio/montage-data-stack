@@ -13,6 +13,9 @@
             "exportName": "Message",
             "module": {
                 "%": "logic/model/message-model"
+            },
+            "objectDescriptorModule": {
+                "%": "data/descriptors/message.mjson"
             }
         }
     },

@@ -1,0 +1,8 @@
+{
+    "root": {
+        "prototype": "logic/service/http-server-service",
+        "values": {
+            "name": "SocketServerService"
+        }
+    }
+}

@@ -1,16 +1,36 @@
 var HttpService = require("montage/data/service/http-service").HttpService,
     Promise = require("montage/core/promise").Promise;
+    
+function ObjectToMap(obj) {
+    const map = new Map();
+    Object.keys(obj).forEach(function(key) {
+        map.set(key, obj[key]);
+    });
+    return map;
+}
 
-var STORE = Map.from({
+function MapToArray(array) {
+    return Array.from(STORE, function(key, value) {
+        return  value;   
+    });
+}
+
+function MaxMapItemPropertyValue(array, prop) {
+    return MapToArray(array).reduce(function (prev, curr) {
+        return curr ? Math.max(prev[prop], curr[prop]) : prev[prop];
+    })[prop];
+}
+
+var STORE = ObjectToMap({
     42: {
         "id": 42,
         "subject": "You've got mail",
         "text": "Hello World!",
-        "create": Date.now()
+        "created": Date.now()
     }
 });
 
-var AUTO_INCREMENT_ID = 43;
+var AUTO_INCREMENT_ID = MaxMapItemPropertyValue(STORE, 'id');
 
 var dataStore = {
     all: function () {
@@ -24,20 +44,14 @@ var dataStore = {
     save: function (value) {
 
         // Update rawData
-        // this.rootService.createdDataObjects.has(object)
         if (!value.id) {
-
             AUTO_INCREMENT_ID++;
             value.id = AUTO_INCREMENT_ID;
             value.created = Date.now();
-
-            // WHY why ?
-            //Object.assign(object, rawData);
-
         } else {
             value.updated = Date.now();
         }
-
+        
         return Promise.resolve(STORE.set(value.id, value)).then(function () {
             return value;
         });
@@ -109,9 +123,7 @@ exports.MessageService = HttpService.specialize(/** @lends MessageService.protot
     // Delete
     deleteRawData: {
         value: function (rawData, object) {
-            return dataStore.delete(rawData.id).then(function () {
-                return Promise.resolve(rawData); 
-            });
+            return dataStore.delete(rawData.id);
         }
     }
 });

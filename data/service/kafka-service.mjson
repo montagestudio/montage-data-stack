@@ -1,0 +1,8 @@
+{
+    "root": {
+        "prototype": "logic/service/kafka-service",
+        "values": {
+            "name": "KafkaService"
+        }
+    }
+}

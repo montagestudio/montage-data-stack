@@ -1,0 +1,18 @@
+{
+    "root": {
+        "prototype": "montage/data/service/data-service",
+        "values": {
+            "name": "DataService",
+            "childServices": [
+                {"@": "kafkaService"},
+                {"@": "sequelizeService"}
+            ]
+        }
+    },
+    "kafkaService": {
+        "object": "data/service/kafka-service.mjson"
+    },
+    "sequelizeService": {
+        "object": "data/service/sequelize-service.mjson"
+    }
+}

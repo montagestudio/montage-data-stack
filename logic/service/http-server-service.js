@@ -1,13 +1,13 @@
-var HttpService = require("montage/data/service/http-service").HttpService,
+var RawDataService = require("montage/data/service/raw-data-service").RawDataService,
     Promise = require("montage/core/promise").Promise;
 
 /**
- * Provides Message
+ * Provides Http to MainService
  *
  * @class
- * @extends external:HttpService
+ * @extends external:RawDataService
  */
-exports.HttpServerService = HttpService.specialize(/** @lends MessageService.prototype */ {
+exports.HttpServerService = RawDataService.specialize(/** @lends HttpServerService.prototype */ {
 
     constructor: {
         value: function HttpServerService() {

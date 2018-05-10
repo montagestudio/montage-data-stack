@@ -12,6 +12,9 @@
             "exportName": "Person",
             "module": {
                 "%": "logic/model/person-model"
+            },
+            "objectDescriptorModule": {
+                "%": "data/descriptors/person.mjson"
             }
         }
     },

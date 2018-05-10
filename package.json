@@ -2,55 +2,95 @@
   "name": "message",
   "description": "service",
   "version": "0.1.0",
+  "licence": "Copyright 2007-2017, Kaazing Corporation. All rights reserved.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/montagestudio/montage-data-stack.git"
+  },
   "main": "index",
   "bin": {
     "message": "cli.js"
   },
+  "engines": {
+    "node": ">=4.x.x"
+  },
   "dependencies": {
     "body-parser": "^1.18.2",
     "commander": "^2.15.1",
+    "compression": "^1.7.2",
     "config": "^1.30.0",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
+    "istanbul": "^0.4.5",
     "joey": "^1.5.3",
-    "montage": "montagejs/montage#master",
+    "kafka-node": "^2.5.0",
+    "montage": "montagejs/montage#features/raw-data-worker",
     "morgan": "^1.9.0",
+    "semver": "^5.5.0",
+    "sequelize": "^4.37.6",
     "socket.io": "^2.1.0",
     "socket.io-client": "^2.1.0"
   },
-  "bin": {
-    "message": "bin/cli.js"
-  },
   "devDependencies": {
+    "async": "^2.6.0",
+    "bl": "^1.2.2",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "concurrently": "^3.5.1",
     "http-server": "^0.11.1",
+    "istanbul": "^0.4.5",
+    "lodash": "^4.17.5",
     "mocha": "^5.0.5",
-    "open": "0.0.5"
+    "nsp": "^2.8.1",
+    "open": "0.0.5",
+    "proxyquire": "^2.0.1",
+    "retry": "^0.12.0",
+    "should": "^13.2.1",
+    "sinon": "^4.5.0",
+    "uuid": "^3.2.1"
   },
   "exclude": [
-    "test"
+    "test",
+    "coverage"
   ],
   "scripts": {
     "lint": "jshint .",
-    "start": "node index.js",
-    "pretest": "npm install",
-    "test": "mocha test --timeout 10000 --exit",
+    "start": "npm run start:docker",
+    "stop": "npm run stop:docker",
+    "start:dev": "docker-compose -f docker-compose.yml up",
+    "pretest": "",
+    "test": "npm run start:test",
+    "start:test": "./run-tests.sh",
+    "test:nsp": "nsp check",
+    "test:mocha": "mocha test/index.js --exit",
+    "test:istanbul": "istanbul cover _mocha -- test/index.js --exit",
     "integration": "concurrently \"npm run serve:test\" \"npm run open:test\"",
     "doc": "concurrently \"npm run serve:doc\" \"npm run open:doc\"",
-    "serve:test": "http-server -p 8081",
+    "start:node": "npm run serve",
+    "serve": "node index",
+    "serve:dev": "APP_PORT=3000 node .",
+    "serve:test": "http-server -p 8081 .",
     "serve:doc": "http-server -p 8082 doc",
     "open:app": "open http://localhost:8080",
     "open:test": "open http://localhost:8081/test",
     "open:doc": "open http://localhost:8082",
+    "open:pghero": "open http://localhost:5001",
+    "open:pgadmin": "open http://localhost:5002",
+    "open:kfma-manager": "open http://localhost:5003",
+    "start:docker": "docker run -p 8080:8080 message-service:develop-SNAPSHOT",
+    "stop:docker": "npm run stop:compose",
     "start:swarm": "docker swarm init",
     "start:stack": "docker stack deploy -c docker-compose.yml 'message-stack'",
     "stop:stack": "docker stack rm 'message-stack'",
     "stop:swarm": "docker swarm leave --force",
-    "build": "npm run build:docker",
-    "build:docker": "docker build . -t message:develop-SNAPSHOT",
+    "build": "npm run build:compose",
+    "build:docker": "docker build . -t message-service:develop-SNAPSHOT",
     "build:compose": "docker-compose build",
-    "start:compose": "docker-compose up -d",
-    "stop:compose": "docker-compose down"
+    "start:composed": "./start-docker.sh",
+    "stop:composed": "./stop-docker.sh",
+    "start:compose": "docker-compose up",
+    "stop:compose": "docker-compose down",
+    "clean:node_modules": "rm -fr node_modules",
+    "clean:compose": "docker-compose rm"
   }
 }
