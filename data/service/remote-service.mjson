@@ -22,15 +22,6 @@
             "mappings": [
                  {"@": "MessageMapping"},
                  {"@": "PersonMapping"}
-            ],
-            "serviceReferences": [
-                 {
-                    "module": {"%": "data/message-service.mjson"}, 
-                    "types": [
-                         {"@": "Message"},
-                         {"@": "Person"}
-                    ]
-                 }
             ]
         }
     }

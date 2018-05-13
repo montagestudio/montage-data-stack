@@ -3,7 +3,6 @@ var Montage = require("montage").Montage,
     ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
     RawDataService = require("montage/data/service/raw-data-service").RawDataService,
     DataOperation = require("montage/data/service/data-operation").DataOperation,
-    RawDataOperation = require("montage/data/service/raw-data-operation").RawDataOperation,
     Promise = require("montage/core/promise").Promise;
 
 var serialize = require("montage/core/serialization/serializer/montage-serializer").serialize;
@@ -39,120 +38,6 @@ exports.AbstractRemoteService = {
         }
     },
 
-    deserializeSelf: {
-        value:function (deserializer) {
-            this.super(deserializer);
-            value = deserializer.getProperty("serviceReferences");
-            if (value) {
-                this.registerServiceReferences(value);
-            }
-        }
-    },
-
-    //
-    // Service Reference
-    //
-
-    _referenceService: {
-        value: undefined
-    },
-
-    _referenceServicesByType: {
-        value: undefined
-    },
-
-    referenceService: {
-        get: function() {
-            if (!this._referenceService) {
-                this._referenceService = new Set();
-            }
-            return this._referenceService;
-        }
-    },
-
-    referenceServicesByType: {
-        get: function () {
-            if (!this._referenceServicesByType) {
-                this._referenceServicesByType = new Map();
-            }
-            return this._referenceServicesByType;
-        }
-    },
-
-    referenceServiceForType: {
-        value: function (type) {
-            var services;
-            type = type instanceof ObjectDescriptor ? type : this._objectDescriptorForType(type);
-            services = this._referenceServicesByType.get(type) || this._referenceServicesByType.get(null);
-            return services && services[0] || null;
-        }
-    },
-
-    registerServiceReferences: {
-        value: function (referenceServices) {
-            var self;
-            if (!this.__referenceServiceRegistrationPromise) {
-                self = this;
-                this.__referenceServiceRegistrationPromise = Promise.all(referenceServices.map(function (service) {
-                    return self.registerServiceReference(service);
-                }));
-            }
-        }
-    },
-
-    registerServiceReference: {
-        value: function (service, types) {
-            var self = this;
-            // possible types
-            // -- types is passed in as an array or a single type.
-            // -- a model is set on the service.
-            // -- types is set on the service.
-            // any type can be asychronous or synchronous.
-                types = types && Array.isArray(types) && types ||
-                        types && [types] ||
-                        service.model && service.model.objectDescriptors ||
-                        service.types && Array.isArray(service.types) && service.types ||
-                        service.types && [service.types] ||
-                        [];
-
-            return self._registerServiceReferenceTypes(service, types);
-        }
-    },
-
-    _registerServiceReferenceTypes: {
-        value: function (service, types) {
-            var self = this;
-            return this._resolveAsynchronousTypes(types).then(function (descriptors) {
-                self._registerTypesByModuleId(descriptors);
-                self._addReferenceService(service, types);
-                return null;
-            });
-        }
-    },
-
-    _addReferenceService: {
-        value: function (service, types) {
-            var serviceren, type, i, n, nIfEmpty = 1;
-            types = types || service.model && service.model.objectDescriptors || service.types;
-            
-            // Add the new service to this service's serviceren set.
-            this.referenceService.add(service);
-
-            // Add the new service service to the services array of each of its
-            // types or to the "all types" service array identified by the
-            // `null` type, and add each of the new service's types to the array
-            // of service types if they're not already there.
-            for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
-                type = types && types.length && types[i] || null;
-                serviceren = this.referenceServicesByType.get(type) || [];
-                serviceren.push(service);
-                if (serviceren.length === 1) {
-                    this.referenceServicesByType.set(type, serviceren);
-                }
-            }
-        }
-    },
-
     //==========================================================================
     // Entry points
     //==========================================================================
@@ -168,15 +53,13 @@ exports.AbstractRemoteService = {
         value: function (stream) {
             var self = this,
                 query = stream.query,
-                service = self.referenceServiceForType(query.type),
-                operation = new RawDataOperation();
+                operation = new DataOperation();
             
-            operation.serviceModule = service.module;
-            operation.objectDescriptorModule = query.type.objectDescriptorInstanceModule;
-            operation.data = query.criteria;
-            operation.type = DataOperation.Type.READ;
+            operation.dataType = query.type.objectDescriptorInstanceModule;
+            operation.criteria = query.criteria;
+            operation.type = DataOperation.Type.Read;
 
-
+            
             return self._performOperation(operation).then(function (remoteDataJson) {
                 return self._deserialize(remoteDataJson).then(function (remoteData) {
                     stream.addData(remoteData);
@@ -191,13 +74,11 @@ exports.AbstractRemoteService = {
         value: function (rawData, object) {
             var self = this,
                 type = self.objectDescriptorForObject(object),
-                service = self.referenceServiceForType(type),
-                operation = new RawDataOperation();
+                operation = new DataOperation();
         
-            operation.serviceModule = service.module;
-            operation.objectDescriptorModule = type.objectDescriptorInstanceModule;
+            operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
-            operation.type = this.rootService.createdDataObjects.has(object) ? DataOperation.Type.CREATE : DataOperation.Type.UPDATE;
+            operation.type = this.rootService.createdDataObjects.has(object) ? DataOperation.Type.Create : DataOperation.Type.Update;
             return self._performOperation(operation).then(function (remoteObjectJSON) {
                 return self._deserialize(remoteObjectJSON).then(function (remoteObject) {
                     return self._mapRawDataToObject(remoteObject, object);
@@ -211,13 +92,11 @@ exports.AbstractRemoteService = {
         value: function (rawData, object) {
             var self = this,
                 type = self.objectDescriptorForObject(object),
-                service = self.referenceServiceForType(type),
-                operation = new RawDataOperation();
+                operation = new DataOperation();
 
-            operation.serviceModule = service.module;
-            operation.objectDescriptorModule = type.objectDescriptorInstanceModule;
+            operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
-            operation.type = DataOperation.Type.DELETE;
+            operation.type = DataOperation.Type.Delete;
 
             return self._performOperation(operation);
         }
@@ -252,7 +131,6 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
             headers = {
                 "Content-Type": "application/json"
             };
-
             return self._serialize(operation).then(function (operationJSON) {
                 body = JSON.stringify({
                     operation: operationJSON

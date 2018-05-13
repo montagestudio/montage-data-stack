@@ -2,7 +2,14 @@
     "root": {
         "prototype": "montage/data/service/raw-data-worker",
         "values": {
-            "name": "RawDataWorker"
+            "name": "RawDataWorker",
+            "childServices": [
+                {"@": "messageService"}
+            ]
         }
+    },
+
+    "messageService": {
+        "object": "data/services/message-service-reference.mjson"
     }
 }

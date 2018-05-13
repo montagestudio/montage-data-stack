@@ -1,6 +1,3 @@
-/**
- * @module ui/main.reel
- */
 var Component = require("montage/ui/component").Component;
 var DataQuery = require("montage/data/model/data-query").DataQuery;
 var Criteria = require("montage/core/criteria").Criteria;
@@ -10,7 +7,7 @@ var deserialize = require('montage/core/serialization/deserializer/montage-deser
 
 //var mainService = require("data/main.mjson").montageObject;
 // var mainService = require("data/main-remote.mjson").montageObject;
-var mainService = require("data/remote-service.mjson").montageObject;
+var mainService = require("data/services/remote-service.mjson").montageObject;
 
 var Message = require("data/descriptors/message.mjson").montageObject;
 var Person = require("data/descriptors/person.mjson").montageObject;
