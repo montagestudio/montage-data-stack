@@ -69,9 +69,7 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
 ### Npm commands
  
  - `lint`: jshint . 
- - `start:node`: node . 
- - `start:docker`: ./start-docker.sh
- - `start:node`: node index.js 
+ - `start:node`: node .  
  - `test`: mocha test --timeout 10000 --exit 
  - `integration`: concurrently \npm run serve:test\ \npm run open:test\ 
  - `doc`: concurrently \npm run serve:doc\ \npm run open:doc\ 
@@ -83,7 +81,6 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
  - `open:pgadmin`: open http://localhost:5001 
  - `open:pgheho`: open http://localhost:5002
  - `open:kafka-manager`: open http://localhost:5003 
- - `start:node`: node init 
  - `start:swarm`: docker swarm init 
  - `start:stack`: docker stack deploy -c docker-compose.yml 'message-stack' 
  - `stop:stack`: docker stack rm 'message-stack' 
