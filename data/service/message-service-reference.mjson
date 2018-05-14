@@ -2,7 +2,7 @@
     "root": {
         "prototype": "montage/data/service/data-service-reference",
         "values": {
-            "module": {"%": "data/services/message-service.mjson"},
+            "module": {"%": "data/service/message-service.mjson"},
             "serviceName": "MessageService",
             "prototypeName": "MessageService",
             "types": [
