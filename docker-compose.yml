@@ -41,7 +41,8 @@ services:
     container_name: message-raw-data-service-cli
     image: message-service:develop-SNAPSHOT
     environment:
-      APP_MAIN: 'data/main-raw-data-worker.mjson'
+      #APP_MAIN: 'data/main-raw-data-worker.mjson'
+      APP_MAIN: 'data/main-worker.mjson'
     networks:
       - frontend
       - backend
@@ -50,7 +51,7 @@ services:
       - ./logic:/usr/src/app/logix:ro
       - ./ui:/usr/src/app/ui:ro
       - ./scripts:/usr/src/app/scripts:ro
-      
+
   # ScheduledWorker
   message-cli:
     container_name: message-service-cli

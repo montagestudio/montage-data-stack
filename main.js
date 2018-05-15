@@ -24,7 +24,7 @@ function getMainService() {
     return mainService ? mainService : (mainService = getMontageRequire().then(function (mr) {
         return mr.async('montage/core/serialization/deserializer/montage-deserializer').then(function (module) {
             var Deserializer = module.MontageDeserializer;
-            return mr.async('data/main-worker.mjson').then(function (descriptor) {
+            return mr.async(APP_MAIN).then(function (descriptor) {
                 var deserializer = new Deserializer().init(descriptor, mr);
                 return deserializer.deserializeObject();
             }); 
