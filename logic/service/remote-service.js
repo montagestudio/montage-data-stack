@@ -112,7 +112,7 @@ exports.AbstractRemoteService = {
 exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService).specialize(/** @lends RemoteService.prototype */ {
 
     _baseUrl: {
-        value: '/api/operation'
+        value: '/api/data/operation'
     },
 
     constructor: {
