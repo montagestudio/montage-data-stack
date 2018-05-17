@@ -62,8 +62,8 @@ exports.AbstractRemoteService = {
             
             return self._performOperation(operation).then(function (remoteDataJson) {
                 return self._deserialize(remoteDataJson).then(function (remoteData) {
-                    stream.addData(remoteData);
-                    stream.dataDone();
+                    self.addRawData(stream, remoteData);
+                    self.rawDataDone(stream);
                 });
             }); 
         }
@@ -118,6 +118,7 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
     constructor: {
         value: function HttpRemoteService() {
             // TODO opts
+            HttpService.constructor.call(this);
         }
     },
 
