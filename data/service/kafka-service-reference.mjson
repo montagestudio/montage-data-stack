@@ -1,0 +1,22 @@
+{
+    "root": {
+        "prototype": "montage/data/service/data-service-reference",
+        "values": {
+            "module": {"%": "data/service/kafka-service.mjson"},
+            "serviceName": "KafkaService",
+            "prototypeName": "KafkaService",
+            "types": [
+                {"@": "Message"},
+                {"@": "Person"}
+            ]
+        }
+    },
+
+    "Message": {
+        "object": "data/descriptors/message.mjson"
+    },
+
+    "Person": {
+        "object": "data/descriptors/person.mjson"
+    }
+}

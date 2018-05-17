@@ -1,0 +1,14 @@
+{
+    "root": {
+        "prototype": "montage/data/service/raw-data-worker",
+        "values": {
+            "name": "KafkaRawDataWorker",
+            "childServices": [
+                {"@": "MessageService"}
+            ]
+        }
+    },
+    "messageService": {
+        "object": "data/service/message-service-reference.mjson"
+    }
+}
