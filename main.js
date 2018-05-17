@@ -6,7 +6,7 @@ var Montage = require('montage');
 
 const PATH = require("path");
 const APP_PATH = process.env.APP_PATH || PATH.join(__dirname, ".");
-const APP_MAIN = process.env.APP_MAIN || 'data/main.mjson';
+const APP_MAIN = process.env.APP_MAIN || 'data/main-worker.mjson';
 
 // Get montage requie instance
 var montageRequire;

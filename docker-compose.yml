@@ -6,7 +6,7 @@ services:
     container_name: message-service
     image: message-service:develop-SNAPSHOT
     environment:
-      APP_MAIN: 'data/main-data-coordinator.mjson'
+      APP_MAIN: 'data/main-worker.mjson'
     # Exposed port
     ports:
       - "8080:8080"
