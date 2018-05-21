@@ -81,9 +81,38 @@ function getOperationFromData(data) {
 
 // Serialize data to query result or object
 // TODO wrap in operation or receive operation
-function getDataOperationResponse(queryResult) {
-    return serialize(queryResult);
+function getDataOperationResponse(queryResult, operation) {
+    // return serialize(queryResult);
+    // return mr.async('montage/data/service/data-operation').then(function (module) {
+    //     return module.deserialize(data, mr); 
+    // });
+    return getMontageRequire().then(function (mr) {
+        return mr.async('montage/data/service/data-operation').then(function (exports) {
+            var returnOperation = new exports.DataOperation();
+            returnOperation.type = returnOperationTypeForOperation(operation.type, exports.DataOperation.Type);
+            returnOperation.data = queryResult;
+            return serialize(returnOperation);
+        });
+    });
 }
+
+function returnOperationTypeForOperation(incomingType, enumeration, error) {
+    var isRead = incomingType.isRead,
+        isCreate = incomingType.isCreate,
+        isUpdate = incomingType.isUpdate,
+        isDelete = incomingType.isDelete;
+
+    return isRead && error   ? enumeration.ReadFailed :
+           isRead            ? enumeration.ReadCompleted :
+           isCreate && error ? enumeration.CreateFailed :
+           isCreate          ? enumeration.CreateCompleted :
+           isUpdate && error ? enumeration.UpdateFailed :
+           isUpdate          ? enumeration.UpdateCompleted :
+           isDelete && error ? enumeration.DeleteFailed :
+           isDelete          ? enumeration.DeleteCompleted :
+                               null;
+}          
+
 
 // Initialize Main Service.
 console.time('MainService');
@@ -95,14 +124,13 @@ getMainService().then(function () {
 
 // Perform fetchData operation
 exports.handleOperation = function (operation) {
-    
     // Decode operation prior to get main service
     return getOperationFromData(operation).then(function (operation) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.fetchData', dataQuery);
             return mainService.handleOperation(operation).then(function (queryResult) {
-                return getDataOperationResponse(queryResult);
+                return getDataOperationResponse(queryResult, operation);
             });
         });
     });
@@ -122,22 +150,6 @@ exports.fetchData = function (query) {
         });
     });
 };
-
-// Perform fetchData operation
-exports.handleOperation = function (operation) {
-    
-    // Decode operation prior to get main service
-    return getOperationFromData(operation).then(function (operation) {
-        // Disptach Operation on main service
-        return getMainService().then(function (mainService) {
-            //console.log('mainService.fetchData', dataQuery);
-            return mainService.handleOperation(operation).then(function (queryResult) {
-                return getDataOperationResponse(queryResult);
-            });
-        });
-    });
-};
-
 // Perform deleteDataObject operation
 exports.deleteDataObject = function (data) {
     // Decode operation prior to get main service

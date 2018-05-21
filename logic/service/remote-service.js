@@ -60,11 +60,9 @@ exports.AbstractRemoteService = {
             operation.type = DataOperation.Type.Read;
 
             
-            return self._performOperation(operation).then(function (remoteDataJson) {
-                return self._deserialize(remoteDataJson).then(function (remoteData) {
-                    self.addRawData(stream, remoteData);
-                    self.rawDataDone(stream);
-                });
+            return self._performOperation(operation).then(function (remoteData) {
+                self.addRawData(stream, remoteData);
+                self.rawDataDone(stream);
             }); 
         }
     },
@@ -79,10 +77,8 @@ exports.AbstractRemoteService = {
             operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
             operation.type = this.rootService.createdDataObjects.has(object) ? DataOperation.Type.Create : DataOperation.Type.Update;
-            return self._performOperation(operation).then(function (remoteObjectJSON) {
-                return self._deserialize(remoteObjectJSON).then(function (remoteObject) {
-                    return self._mapRawDataToObject(remoteObject, object);
-                });
+            return self._performOperation(operation).then(function (remoteObject) {
+                return self._mapRawDataToObject(remoteObject, object);
             });
         }
     },
@@ -137,6 +133,10 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
                     operation: operationJSON
                 });
                 return self.fetchHttpRawData(url, headers, body, false);
+            }).then(function (response) {
+                return self._deserialize(response);
+            }).then(function (returnOperation) {
+                return returnOperation.data;
             });
         }  
     } 
