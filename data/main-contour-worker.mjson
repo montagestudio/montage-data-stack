@@ -1,0 +1,32 @@
+{
+    "root": {
+        "prototype": "montage/data/service/raw-data-worker",
+        "values": {
+            "name": "RawDataWorker",
+            "types": {"@": "TypeToChildServiceMap"}
+        }
+    },
+
+    "TypeToChildServiceMap": {
+        "prototype": "Map",
+        "values": {
+            "entries": [
+                {"key": {"@": "Feature"}, "value": {"%": "contour-framework/data/feature-service.mjson"}},
+                {"key": {"@": "Layer"}, "value": {"%": "contour-framework/data/layer-service.mjson"}},
+                {"key": {"@": "MapService"}, "value": {"%": "contour-framework/data/map-service-service.mjson"}}
+            ]
+        }
+    },
+
+    "Feature": {
+        "object": "contour-framework/logic/model/descriptors/feature.mjson"
+    },
+
+    "Layer": {
+        "object": "contour-framework/logic/model/descriptors/layer.mjson"
+    },
+
+    "MapService": {
+        "object": "contour-framework/logic/model/descriptors/map-service.mjson"
+    }
+}
