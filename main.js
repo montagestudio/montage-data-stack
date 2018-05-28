@@ -1,12 +1,16 @@
+/* global module, require, Promise */
 /* jshint node: true */
 'use strict';
+
+// Expose Env
+global.XMLHttpRequest = require('xhr2');
 
 // [START main_body]
 var Montage = require('montage');
 
 const PATH = require("path");
 const APP_PATH = process.env.APP_PATH || PATH.join(__dirname, ".");
-const APP_MAIN = process.env.APP_MAIN || 'data/main-worker.mjson';
+const APP_MAIN = process.env.APP_MAIN || 'data/main-contour-worker.mjson';
 
 // Get montage requie instance
 var montageRequire;
@@ -81,7 +85,7 @@ function getOperationFromData(data) {
 
 // Serialize data to query result or object
 // TODO wrap in operation or receive operation
-function getDataOperationResponse(queryResult, operation) {
+function getDataOperationResponse(queryResult, operation, error) {
     // return serialize(queryResult);
     // return mr.async('montage/data/service/data-operation').then(function (module) {
     //     return module.deserialize(data, mr); 
@@ -89,8 +93,9 @@ function getDataOperationResponse(queryResult, operation) {
     return getMontageRequire().then(function (mr) {
         return mr.async('montage/data/service/data-operation').then(function (exports) {
             var returnOperation = new exports.DataOperation();
-            returnOperation.type = returnOperationTypeForOperation(operation.type, exports.DataOperation.Type);
+            returnOperation.type = returnOperationTypeForOperation(operation.type, exports.DataOperation.Type, error);
             returnOperation.data = queryResult;
+            returnOperation.dataType = operation.dataType;
             return serialize(returnOperation);
         });
     });
@@ -116,7 +121,7 @@ function returnOperationTypeForOperation(incomingType, enumeration, error) {
 
 // Initialize Main Service.
 console.time('MainService');
-getMainService().then(function () {
+getMainService().then(function (mainService) {
     console.timeEnd('MainService');
     console.log("MainService Ready!");  
 });
@@ -131,9 +136,15 @@ exports.handleOperation = function (operation) {
             //console.log('mainService.fetchData', dataQuery);
             return mainService.handleOperation(operation).then(function (queryResult) {
                 return getDataOperationResponse(queryResult, operation);
+            }).catch(function (e) {
+                return getDataOperationResponse([], operation, e);
             });
+        }).catch(function (e) {
+            return getDataOperationResponse([], operation, e);
         });
-    });
+    }).catch(function (e) {
+        return getDataOperationResponse([], operation, e);
+    }); 
 };
 
 

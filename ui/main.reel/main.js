@@ -7,10 +7,17 @@ var deserialize = require('montage/core/serialization/deserializer/montage-deser
 
 //var mainService = require("data/main.mjson").montageObject;
 // var mainService = require("data/main-remote.mjson").montageObject;
-var mainService = require("data/service/remote-service.mjson").montageObject;
+// var mainService = require("data/service/remote-service.mjson").montageObject;
+var mainService = require("data/service/remote-service-contour.mjson").montageObject;
 
-var Message = require("data/descriptors/message.mjson").montageObject;
-var Person = require("data/descriptors/person.mjson").montageObject;
+var SentinelContourController = require("contour-framework/logic/controller/sentinel-contour-controller").SentinelContourController;
+
+// var Message = require("data/descriptors/message.mjson").montageObject;
+// var Person = require("data/descriptors/person.mjson").montageObject;
+var Feature = require("contour-framework/logic/model/descriptors/feature.mjson").montageObject;
+var Layer = require("contour-framework/logic/model/descriptors/layer.mjson").montageObject;
+var MapService = require("contour-framework/logic/model/descriptors/map-service.mjson").montageObject;
+var Configuration = require("contour-framework/logic/model/descriptors/configuration.mjson").montageObject;
 
 function assert(msg, assertion, debug) {
     if (assertion) {
@@ -25,87 +32,62 @@ function assert(msg, assertion, debug) {
  * @extends Component
  */
 exports.Main = Component.specialize(/** @lends Main# */ {
+
+    
+
+
     constructor: {
         value: function Main() {
             this.super();
+            var self = this;
+            self.application.delegate = new SentinelContourController();
+            self.application.delegate.initialize(mainService).then(function () {
+                self._run();
+            });
+            
+        }
+    },
 
+    _enableDefaultLayers: {
+        value: function () {
+            var background = null,
+                layers, layer, i, n;
+
+            layers = this.application.delegate.configuration.layers["default"];
+            console.log("DefaultLayers", layers);
+            layers[3].isEnabled = true; //Enable hazard layer
+            
+            // for (i = 0; (i < 1 && (layer = layers[i])); ++i) {
+            //     console.log(layer);
+            //     debugger;
+            //     layer.isEnabled = true;
+            //     background = background || layer.isBackground && layer;
+            // }
+
+            // if (!background) {
+            //     layers = this.application.delegate.configuration.layers.all;
+            //     for (i = 0; (layer = layers[i]) && !background; i++) {
+            //         background = background || layer.isBackground && layer;
+            //     }
+            //     background.isEnabled = true;
+            // }
+
+        }
+    },
+
+    _run: {
+        value: function () {
+            var self = this,
+                service = self.application.delegate.service;
             // myMsg from service
-            var dataType = Message;
-            var dataSubType = Person;
+            var dataType = MapService;
+            // var dataSubType = Person;
 
             // myMsg from service with criteria
-            var dataExpression = "";
-            var dataParameters = {};
-            var dataCriteria = new Criteria().initWithExpression(dataExpression, dataParameters);
-            var dataQuery  = DataQuery.withTypeAndCriteria(dataType, dataCriteria);
-
-
-            // Test via serialize then deserialize
-            // TODO Cause Can't fetch data of unknown type - undefined/undefined
-            // Comment to bypass this
-            // DEBUG
-            //var queryMjson = serialize(dataQuery, require);
-            //dataQuery = deserialize(queryMjson, require);
-            //console.log(queryMjson);
-            // DEBUG
-
-            mainService.fetchData(dataQuery).then(function (res) {
-                assert('fetchData:withTypeAndCriteria', res.length === 1, res);
-
-                mainService.fetchData(dataType).then(function (res) {
-                    assert('fetchData:withType', res.length === 1, res[0]);
-
-                    // TODO
-                    // Remote support READ only for now.
-                    //return;
-
-                    // Create reply
-                    var myMsg = mainService.createDataObject(dataType);
-                    myMsg.subject = "RE: You've got mail";
-                    mainService.saveDataObject(myMsg).then(function () {
-                        assert('saveDataObject.created', typeof myMsg.created !== 'undefined', myMsg);
-                        assert('saveDataObject.updated', typeof myMsg.updated === 'undefined', myMsg);
-                        myMsg.text = "Add missing text";
-
-                        // myMsg is updated
-                        mainService.saveDataObject(myMsg).then(function () {
-                            assert('saveDataObject.text', typeof myMsg.text !== 'undefined', myMsg);
-                            assert('saveDataObject.updated', typeof myMsg.updated !== 'undefined', myMsg);
-
-                            // myMsg from service
-                            mainService.fetchData(dataType).then(function (res) {
-                            
-                                assert('fetchData', res.length == 2, res);
-
-                                // myMsg is deleted
-                                mainService.deleteDataObject(myMsg).then(function () {
-                                    
-                                    // myMsg from service with criteria
-                                    var dataExpression = "";
-                                    var dataParameters = {
-                                        id: myMsg.id
-                                    };
-                                    var dataCriteria = new Criteria().initWithExpression(dataExpression, dataParameters);
-                                    var dataQuery  = DataQuery.withTypeAndCriteria(dataType, dataCriteria);
-
-                                    //var query = serialize(dataQuery, require);
-                                    //console.log(query);
-                                    
-                                    mainService.fetchData(dataQuery).then(function (res) {
-                                        assert('fetchData:withTypeAndCriteria', res.length === 0, res);
-
-                                        // myMsg from service
-                                        mainService.fetchData(dataType).then(function (res) {
-                                            assert('fetchData:withType', res.length === 1, res);
-                                        });
-                                    });
-                                });
-                            });
-                        }); 
-                    }); 
-                });
-            }); 
+            this._enableDefaultLayers();
+            console.log("FetchedConfiguration....", self.application.delegate.layers);
         }
+        
     }
 });
 

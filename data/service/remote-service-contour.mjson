@@ -1,0 +1,131 @@
+{
+
+    "Configuration": {
+        "object": "contour-framework/logic/model/descriptors/configuration.mjson"
+    },
+
+    "Field": {
+        "object": "contour-framework/logic/model/descriptors/field.mjson"
+    },
+
+    "GeometryType": {
+        "object": "contour-framework/logic/model/descriptors/geometry-type.mjson"
+    },
+
+    "Feature": {
+        "object": "contour-framework/logic/model/descriptors/feature.mjson"
+    },
+
+    "Layer": {
+        "object": "contour-framework/logic/model/descriptors/layer.mjson"
+    },
+
+    "Renderer": {
+        "object": "contour-framework/logic/model/descriptors/renderer.mjson"
+    },
+
+    "cameraLayerMapping": {
+        "object": "contour-framework/data/mapping/camera-layer-mapping.mjson"
+    },
+
+    "cameraLayer": {
+        "object": "contour-framework/logic/model/descriptors/camera-layer.mjson"
+    },
+
+    "gpxLayer": {
+        "object": "contour-framework/logic/model/descriptors/gpx-layer.mjson"
+    },
+
+    "hazardLayer": {
+        "object": "contour-framework/logic/model/descriptors/hazard-layer.mjson"
+    },
+
+    "kmlLayer": {
+        "object": "contour-framework/logic/model/descriptors/kml-layer.mjson"
+    },
+
+    "layerFolder": {
+        "object": "contour-framework/logic/model/descriptors/layer-folder.mjson"
+    },
+
+    "virtualLayer": {
+        "object": "contour-framework/logic/model/descriptors/virtual-layer.mjson"
+    },
+
+    "layerMapping": {
+        "object": "contour-framework/data/mapping/layer-mapping.mjson"
+    },
+
+    "shapefileLayer": {
+        "object": "contour-framework/logic/model/descriptors/shapefile-layer.mjson"
+    },
+
+    "socialLayer": {
+        "object": "contour-framework/logic/model/descriptors/social-layer.mjson"
+    },
+
+    "socialLayerMapping": {
+        "object": "contour-framework/data/mapping/social-layer-mapping.mjson"
+    },
+
+    "virtualLayerMapping": {
+        "object": "contour-framework/data/mapping/virtual-layer-mapping.mjson"
+    },
+
+    "windmapLayer": {
+        "object": "contour-framework/logic/model/descriptors/weather-model-layer.mjson"
+    },
+
+    "wktLayer": {
+        "object": "contour-framework/logic/model/descriptors/wkt-layer.mjson"
+    },
+
+    
+    
+    "MapService": {
+        "object": "contour-framework/logic/model/descriptors/map-service.mjson"
+    },
+
+    "root": {
+        "prototype": "logic/service/remote-service",
+        "values": {
+            "name": "HttpRemoteService",
+            "types": [
+                 {"@": "Field"},
+                 {"@": "GeometryType"},
+                 {"@": "Feature"},
+                 {"@": "Layer"},
+                 {"@": "Renderer"},
+                 {"@": "Configuration"},
+                 {"@": "MapService"},
+                 {"@": "cameraLayer"},
+                 {"@": "gpxLayer"},
+                 {"@": "hazardLayer"},
+                 {"@": "kmlLayer"},
+                 {"@": "layerFolder"},
+                 {"@": "shapefileLayer"},
+                 {"@": "socialLayer"},
+                 {"@": "virtualLayer"},
+                 {"@": "windmapLayer"},
+                 {"@": "wktLayer"}
+            ],
+            "mappings": [
+                {"@": "cameraLayerMapping"},
+                {"@": "configurationMapping"},
+                {"@": "featureMapping"},
+                {"@": "layerMapping"},
+                {"@": "socialLayerMapping"},
+                {"@": "virtualLayerMapping"}
+            ]
+        }
+    },
+    
+    "configurationMapping": {
+        "object": "contour-framework/data/mapping/configuration-mapping.mjson"
+    },
+
+    "featureMapping": {
+        "object": "contour-framework/data/mapping/feature-mapping.mjson"
+    }
+
+}

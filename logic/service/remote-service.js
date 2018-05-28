@@ -19,7 +19,7 @@ exports.AbstractRemoteService = {
 
    _serialize: {
         value: function (dataObject) {
-            
+            // debugger;
             var self = this,
                 objectJSON = serialize(dataObject, require);
             return self._deserialize(objectJSON).then(function () {
@@ -31,9 +31,14 @@ exports.AbstractRemoteService = {
 
     _deserialize: {
         value: function (objectJSON) {
+            
             return deserialize(objectJSON, require).then(function (dataObject) {
                 //console.log('_deserialize', objectJSON, dataObject);
                 return dataObject;
+            }).catch(function (e) {
+                console.log(objectJSON);
+                console.warn(e);
+                debugger;
             });
         }
     },
@@ -53,15 +58,21 @@ exports.AbstractRemoteService = {
         value: function (stream) {
             var self = this,
                 query = stream.query,
-                operation = new DataOperation();
+                operation = new DataOperation(),
+                context = query.criteria.parameters || {};
+                
             
+            operation.context = context;
             operation.dataType = query.type.objectDescriptorInstanceModule;
             operation.criteria = query.criteria;
             operation.type = DataOperation.Type.Read;
 
-            
+            var id = operation.dataType.id.split("/").pop();
+
             return self._performOperation(operation).then(function (remoteData) {
-                self.addRawData(stream, remoteData);
+                var parameters = operation.criteria && operation.criteria.parameters;
+
+                self.addRawData(stream, remoteData, operation.context);
                 self.rawDataDone(stream);
             }); 
         }
@@ -72,13 +83,24 @@ exports.AbstractRemoteService = {
         value: function (rawData, object) {
             var self = this,
                 type = self.objectDescriptorForObject(object),
-                operation = new DataOperation();
+                operation = new DataOperation(),
+                rawKeys = Object.keys(rawData);
         
             operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
             operation.type = this.rootService.createdDataObjects.has(object) ? DataOperation.Type.Create : DataOperation.Type.Update;
+            
+            if (!rawKeys.length) {
+                operation.data = object;
+            }
             return self._performOperation(operation).then(function (remoteObject) {
-                return self._mapRawDataToObject(remoteObject, object);
+
+                if (rawKeys.length) {
+                    return self._mapRawDataToObject(remoteObject, object);
+                } else {
+                    return self.nullPromise;
+                }
+                
             });
         }
     },
@@ -128,14 +150,25 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
             headers = {
                 "Content-Type": "application/json"
             };
+            var id = operation.dataType.id.split("/").pop();
+            
+            
             return self._serialize(operation).then(function (operationJSON) {
                 body = JSON.stringify({
                     operation: operationJSON
                 });
+                if (id === "feature.mjson") {
+                    console.log(operationJSON);
+                    debugger;
+                }
                 return self.fetchHttpRawData(url, headers, body, false);
             }).then(function (response) {
                 return self._deserialize(response);
             }).then(function (returnOperation) {
+                if (id === "feature.mjson") {
+                    console.log(returnOperation);
+                    debugger;
+                }
                 return returnOperation.data;
             });
         }  

@@ -1,8 +1,8 @@
 {
     "root": {
-        "prototype": "montage/data/service/raw-data-worker",
+        "prototype": "logic/service/contour-raw-data-worker",
         "values": {
-            "name": "RawDataWorker",
+            "name": "ContourRawDataWorker",
             "types": {"@": "TypeToChildServiceMap"}
         }
     },
@@ -11,6 +11,11 @@
         "prototype": "Map",
         "values": {
             "entries": [
+                {"key": {"@": "Configuration"}, "value": {"%": "contour-framework/data/configuration-service.mjson"}},
+                {"key": {"@": "Field"}, "value": {"%": "contour-framework/data/layer-information-service.mjson"}},
+                {"key": {"@": "GeometryType"}, "value": {"%": "contour-framework/data/layer-information-service.mjson"}},
+                {"key": {"@": "Renderer"}, "value": {"%": "contour-framework/data/layer-information-service.mjson"}},
+                {"key": {"@": "Feature"}, "value": {"%": "contour-framework/data/feature-service.mjson"}},
                 {"key": {"@": "Feature"}, "value": {"%": "contour-framework/data/feature-service.mjson"}},
                 {"key": {"@": "Layer"}, "value": {"%": "contour-framework/data/layer-service.mjson"}},
                 {"key": {"@": "MapService"}, "value": {"%": "contour-framework/data/map-service-service.mjson"}}
@@ -18,8 +23,20 @@
         }
     },
 
+    "Configuration": {
+        "object": "contour-framework/logic/model/descriptors/configuration.mjson"
+    },
+
     "Feature": {
         "object": "contour-framework/logic/model/descriptors/feature.mjson"
+    },
+
+    "Field": {
+        "object": "contour-framework/logic/model/descriptors/field.mjson"
+    },
+
+    "GeometryType": {
+        "object": "contour-framework/logic/model/descriptors/geometry-type.mjson"
     },
 
     "Layer": {
@@ -28,5 +45,9 @@
 
     "MapService": {
         "object": "contour-framework/logic/model/descriptors/map-service.mjson"
+    },
+
+    "Renderer": {
+        "object": "contour-framework/logic/model/descriptors/renderer.mjson"
     }
 }

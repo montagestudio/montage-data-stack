@@ -22,6 +22,7 @@
     "contour-framework": "konturlabs/contour-framework#master",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "http2": "^3.3.6",
     "joey": "^1.5.3",
     "montage": "montagejs/montage#features/sentinel",
     "kafka-node": "^2.5.0",
@@ -29,7 +30,8 @@
     "semver": "^5.5.0",
     "sequelize": "^4.37.6",
     "socket.io": "^2.1.0",
-    "socket.io-client": "^2.1.0"
+    "socket.io-client": "^2.1.0",
+    "xhr2": "^0.1.4"    
   },
   "devDependencies": {
     "async": "^2.6.0",
