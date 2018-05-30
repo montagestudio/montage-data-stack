@@ -145,6 +145,26 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
         }
     },
 
+    _operationTimeouts: {
+        value: new Map()
+    },
+
+    _timeOperation: {
+        value: function (operation) {
+            this._operationTimeouts.set(operation, setTimeout(function () {
+                console.log("OperationTimedOut", operation);
+            }, 5000));
+        }
+    },
+
+    _clearOperationTimer: {
+        value: function (operation) {
+            var timeout = this._operationTimeouts.get(operation);
+            clearTimeout(timeout);
+            this._operationTimeouts.delete(operation);
+        }
+    },
+
     _performOperation: {
         value: function (operation) {
             var body, url, headers, 
@@ -162,22 +182,12 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
                 body = JSON.stringify({
                     operation: operationJSON
                 });
-                // if (id === "feature.mjson") {
-                //     console.log(JSON.parse(operationJSON));
-                //     debugger;
-                // }
+                self._timeOperation(operation);
                 return self.fetchHttpRawData(url, headers, body, false);
             }).then(function (response) {
-                if (id === "feature.mjson" || id === "geometry-type.mjson") {
-                    console.log(id, operation.context, response);
-                    debugger;
-                }
+                self._clearOperationTimer(operation);
                 return self._deserialize(response);
             }).then(function (returnOperation) {
-                if (id === "feature.mjson" || id === "geometry-type.mjson") {
-                    console.log(id, operation.context, returnOperation);
-                    debugger;
-                }
                 return returnOperation.data;
             });
         }  

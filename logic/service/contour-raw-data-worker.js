@@ -56,15 +56,12 @@ exports.ContourRawDataWorker = RawDataWorker.specialize(/** @lends HttpServerSer
                     return self._configurationPromise.then(function (configuration) {
                         return self[handlerName](operation, service, objectDescriptor).then(function (endResult) {
                             var parameters = operation.criteria && operation.criteria.parameters;
-                            if (objectDescriptor === Layer && parameters && parameters.mapService) {
-                                console.log(endResult);
+                            // if (objectDescriptor === Layer && parameters && parameters.mapService) {
+                            //     console.log(endResult);
                                 
-                            }
+                            // }
                             return endResult;
                         });
-                    }).catch(function (e) {
-                        var myE = e;
-                        console.warn(e);
                     });
                 }
             });

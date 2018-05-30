@@ -70,7 +70,10 @@ app.route("/api/data/operation")
         // GET operation
         main.handleOperation(req.body.operation).then(function (result) {
           resultToHttpResponse(res, 'operation', result);
-        }).catch(next);
+        }).catch(function (error) {
+          console.warn(error);
+          next(error);
+        });
     });
 
 app.route("/api/data")

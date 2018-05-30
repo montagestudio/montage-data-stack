@@ -16,6 +16,7 @@ var SentinelContourController = require("contour-framework/logic/controller/sent
 // var Person = require("data/descriptors/person.mjson").montageObject;
 var Feature = require("contour-framework/logic/model/descriptors/feature.mjson").montageObject;
 var Layer = require("contour-framework/logic/model/descriptors/layer.mjson").montageObject;
+var LayerType = require("contour-framework/logic/model/layer").Layer.Type;
 var MapService = require("contour-framework/logic/model/descriptors/map-service.mjson").montageObject;
 var Configuration = require("contour-framework/logic/model/descriptors/configuration.mjson").montageObject;
 
@@ -55,23 +56,27 @@ exports.Main = Component.specialize(/** @lends Main# */ {
 
             layers = this.application.delegate.configuration.layers["default"];
             console.log("DefaultLayers", layers);
-            layers[3].isEnabled = true; //Enable hazard layer
+            for (i = 0; (layer = layers[i]); ++i) {
+                if (!layer.isBackground) {
+                    this._enableLayer(layer);
+                    layer.isEnabled = true;
+                }
+            }
+        }
+    },
+
+    _enableLayer: {
+        value: function (layer) {
+            layer.isEnabled = true; 
+            console.log(layer.name, layer.type, layer.isVirtual);
+            if (!layer.isVirtual && layer.type.name === LayerType.FEATURE.name) {
+                layer.features.all.addRangeChangeListener(function (plus, minus, index) {
+                    console.log("Features (" + layer.name + ")", plus, minus);
+                });
+            } else {
+                console.log("No Features", layer.name);
+            }
             
-            // for (i = 0; (i < 1 && (layer = layers[i])); ++i) {
-            //     console.log(layer);
-            //     debugger;
-            //     layer.isEnabled = true;
-            //     background = background || layer.isBackground && layer;
-            // }
-
-            // if (!background) {
-            //     layers = this.application.delegate.configuration.layers.all;
-            //     for (i = 0; (layer = layers[i]) && !background; i++) {
-            //         background = background || layer.isBackground && layer;
-            //     }
-            //     background.isEnabled = true;
-            // }
-
         }
     },
 
