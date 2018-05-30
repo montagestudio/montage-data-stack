@@ -79,8 +79,6 @@
     "wktLayer": {
         "object": "contour-framework/logic/model/descriptors/wkt-layer.mjson"
     },
-
-    
     
     "MapService": {
         "object": "contour-framework/logic/model/descriptors/map-service.mjson"

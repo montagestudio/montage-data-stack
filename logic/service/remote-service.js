@@ -60,7 +60,12 @@ exports.AbstractRemoteService = {
                 query = stream.query,
                 operation = new DataOperation(),
                 context = query.criteria.parameters || {};
-                
+            
+            // if (query.type.name === "Feature" || query.type.name === "GeometryType") {
+            //     console.log(query.type.name, context, context.layer && context.layer.geometryType && context.layer.geometryType.mapRawGeometry);
+            //     debugger;
+            // }
+            
             
             operation.context = context;
             operation.dataType = query.type.objectDescriptorInstanceModule;
@@ -71,7 +76,7 @@ exports.AbstractRemoteService = {
 
             return self._performOperation(operation).then(function (remoteData) {
                 var parameters = operation.criteria && operation.criteria.parameters;
-
+                
                 self.addRawData(stream, remoteData, operation.context);
                 self.rawDataDone(stream);
             }); 
@@ -157,16 +162,20 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
                 body = JSON.stringify({
                     operation: operationJSON
                 });
-                if (id === "feature.mjson") {
-                    console.log(operationJSON);
-                    debugger;
-                }
+                // if (id === "feature.mjson") {
+                //     console.log(JSON.parse(operationJSON));
+                //     debugger;
+                // }
                 return self.fetchHttpRawData(url, headers, body, false);
             }).then(function (response) {
+                if (id === "feature.mjson" || id === "geometry-type.mjson") {
+                    console.log(id, operation.context, response);
+                    debugger;
+                }
                 return self._deserialize(response);
             }).then(function (returnOperation) {
-                if (id === "feature.mjson") {
-                    console.log(returnOperation);
+                if (id === "feature.mjson" || id === "geometry-type.mjson") {
+                    console.log(id, operation.context, returnOperation);
                     debugger;
                 }
                 return returnOperation.data;
