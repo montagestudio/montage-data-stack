@@ -94,28 +94,27 @@ function getDataOperationResponse(queryResult, operation, error) {
         return mr.async('montage/data/service/data-operation').then(function (exports) {
             var returnOperation = new exports.DataOperation();
             returnOperation.type = returnOperationTypeForOperation(operation.type, exports.DataOperation.Type, error);
-            returnOperation.data = queryResult;
+            if (exports.DataOperation.Type.isFailure(returnOperation.type)) {
+                returnOperation.data = {
+                    message: error.message,
+                    stack: error.stack
+                   // time: new Date().now()
+                };
+            } else {
+                returnOperation.data = queryResult;
+            }
+            
             returnOperation.dataType = operation.dataType;
             return serialize(returnOperation);
         });
     });
 }
 
-function returnOperationTypeForOperation(incomingType, enumeration, error) {
-    var isRead = incomingType.isRead,
-        isCreate = incomingType.isCreate,
-        isUpdate = incomingType.isUpdate,
-        isDelete = incomingType.isDelete;
 
-    return isRead && error   ? enumeration.ReadFailed :
-           isRead            ? enumeration.ReadCompleted :
-           isCreate && error ? enumeration.CreateFailed :
-           isCreate          ? enumeration.CreateCompleted :
-           isUpdate && error ? enumeration.UpdateFailed :
-           isUpdate          ? enumeration.UpdateCompleted :
-           isDelete && error ? enumeration.DeleteFailed :
-           isDelete          ? enumeration.DeleteCompleted :
-                               null;
+
+function returnOperationTypeForOperation(incomingType, enumeration, error) {
+    return error ? enumeration.failureTypeForType(incomingType) :
+                   enumeration.completionTypeForType(incomingType);
 }          
 
 
@@ -128,9 +127,11 @@ getMainService().then(function (mainService) {
 
 
 // Perform fetchData operation
-exports.handleOperation = function (operation) {
+exports.handleOperation = function (rawOperation) {
+    var operation;
     // Decode operation prior to get main service
-    return getOperationFromData(operation).then(function (operation) {
+    return getOperationFromData(rawOperation).then(function (mappedOperation) {
+        operation = mappedOperation;
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.fetchData', dataQuery);

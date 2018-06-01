@@ -34,9 +34,6 @@ function assert(msg, assertion, debug) {
  */
 exports.Main = Component.specialize(/** @lends Main# */ {
 
-    
-
-
     constructor: {
         value: function Main() {
             this.super();
@@ -47,6 +44,20 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             });
             
         }
+    },
+
+    _run: {
+        value: function () {
+            var self = this,
+                service = self.application.delegate.service;
+            // myMsg from service
+            var dataType = MapService;
+            // var dataSubType = Person;
+
+            // myMsg from service with criteria
+            this._enableDefaultLayers();
+        }
+        
     },
 
     _enableDefaultLayers: {
@@ -79,20 +90,5 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             
         }
     },
-
-    _run: {
-        value: function () {
-            var self = this,
-                service = self.application.delegate.service;
-            // myMsg from service
-            var dataType = MapService;
-            // var dataSubType = Person;
-
-            // myMsg from service with criteria
-            this._enableDefaultLayers();
-            console.log("FetchedConfiguration....", self.application.delegate.layers);
-        }
-        
-    }
 });
 

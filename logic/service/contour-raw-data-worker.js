@@ -3,6 +3,7 @@ var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorke
     Layer = require("contour-framework/logic/model/descriptors/layer.mjson").montageObject,
     MapService = require("contour-framework/logic/model/descriptors/map-service.mjson").montageObject,
     DataOperation = require("montage/data/service/data-operation").DataOperation,
+    DataOperationType = require("montage/data/service/data-operation-type").DataOperationType,
     Criteria = require("montage/core/criteria").Criteria,
     Promise = require("montage/core/promise").Promise;
 
@@ -19,9 +20,9 @@ exports.ContourRawDataWorker = RawDataWorker.specialize(/** @lends HttpServerSer
             if (!this.__configurationPromise) {
                 var operation = new DataOperation();
                 operation.dataType = Configuration;
-                operation.type = DataOperation.Type.Read;
+                operation.type = DataOperationType.Read;
                 operation.criteria = new Criteria().initWithExpression("", {
-                    deploymentURL: "https://testdisasteralert.pdc.org/disasteralert",
+                    deploymentURL: "https://disasteralert.pdc.org/disasteralert",
                     configurationOnly: true
                 });
                 this.__configurationPromise = this.handleOperation(operation).then(function (data) {
@@ -44,24 +45,13 @@ exports.ContourRawDataWorker = RawDataWorker.specialize(/** @lends HttpServerSer
             }).then(function (service) {
                 var handlerName = self._handlerNameForOperationType(operation.type);
                 if (!service) {
-                    // console.log(operation, self, objectDescriptor);
                     throw new Error("No service available to handle operation with type (" + (objectDescriptor && objectDescriptor.name) + ")");
-                }
-                if (objectDescriptor === Layer) {
-                    var test = 1;
                 }
                 if (objectDescriptor === Configuration) {
                 return self[handlerName](operation, service, objectDescriptor);
                 } else {
                     return self._configurationPromise.then(function (configuration) {
-                        return self[handlerName](operation, service, objectDescriptor).then(function (endResult) {
-                            var parameters = operation.criteria && operation.criteria.parameters;
-                            // if (objectDescriptor === Layer && parameters && parameters.mapService) {
-                            //     console.log(endResult);
-                                
-                            // }
-                            return endResult;
-                        });
+                        return self[handlerName](operation, service, objectDescriptor);
                     });
                 }
             });
