@@ -1,8 +1,28 @@
 {
+    "Message": {
+        "object": "data/descriptors/message.mjson"
+    },
+    "MessageMapping": {
+        "object": "data/mapping/message-mapping.mjson"
+    },
+    "Person": {
+        "object": "data/descriptors/person.mjson"
+    },
+    "PersonMapping": {
+        "object": "data/mapping/person-mapping.mjson"
+    },
     "root": {
         "prototype": "logic/service/message-service",
         "values": {
-            "name": "MessageService"
+            "name": "MessageService",
+            "types": [
+                 {"@": "Message"},
+                 {"@": "Person"}
+            ],
+            "mappings": [
+                 {"@": "MessageMapping"},
+                 {"@": "PersonMapping"}
+            ]
         }
     }
 }
