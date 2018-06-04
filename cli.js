@@ -8,6 +8,7 @@ var program = require('commander');
  
 program
   .version(package.version)
+  .option('-f, --handleOperation [operation]', 'perform operation')
   .option('-f, --fetchData [query]', 'fetch data')
   .option('-s, --saveDataObject [object]', 'save data object')
   .option('-d, --deleteDataObject [object]', 'delete data object')
@@ -17,8 +18,12 @@ program
 var main = require('./main');
 
 var command;
-if (program.fetchData) {
-
+if (program.handleOperation) {
+	command = main.fetchData(program.handleOperation).then(function (result) {
+		console.log(result);
+		process.exit(0);
+	});
+} else if (program.fetchData) {
 	command = main.fetchData(program.fetchData).then(function (result) {
 		console.log(result);
 		process.exit(0);
@@ -35,7 +40,11 @@ if (program.fetchData) {
 	});
 }
 
-command.catch(function (err) {
-	console.error(err.stack || err);
-	process.exit(1);
-});
+if (command) {
+	command.catch(function (err) {
+		console.error(err.stack || err);
+		process.exit(1);
+	});	
+} else {
+	program.help();
+}
