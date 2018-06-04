@@ -1,0 +1,1 @@
+node cli --fetchData '{ "root": { "prototype": "montage/data/model/data-query", "values": { "criteria": {}, "orderings": [], "prefetchExpressions": null, "typeModule": { "%": "data/descriptors/message.mjson" } } } }'

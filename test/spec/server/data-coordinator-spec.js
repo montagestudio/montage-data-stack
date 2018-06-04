@@ -1,8 +1,8 @@
-describe('Coordinator Service', () => {
+describe('DataCoordinatorService', () => {
   beforeEach((done) => {
      done();        
   });
-  describe('CoordinatorService', () => {
+  describe('MainService', () => {
       it('it should load main-coordinator.mjson', (done) => {
         done();
       });
