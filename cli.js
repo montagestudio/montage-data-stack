@@ -17,8 +17,13 @@ program
 var main = require('./main');
 
 var command;
-if (program.fetchData) {
 
+if (program.handleOperation) {
+	command = main.fetchData(program.handleOperation).then(function (result) {
+		console.log(result);
+		process.exit(0);
+	});
+} else if (program.fetchData) {
 	command = main.fetchData(program.fetchData).then(function (result) {
 		console.log(result);
 		process.exit(0);

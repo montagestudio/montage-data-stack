@@ -1,18 +1,27 @@
 {
     "root": {
-        "prototype": "montage/data/service/data-service",
+        "prototype": "montage/data/service/raw-data-worker",
         "values": {
-            "name": "DataService",
-            "childServices": [
-                {"@": "kafkaService"},
-                {"@": "sequelizeService"}
+            "name": "KafkaRawDataWorker",
+            "types": {"@": "TypeToChildServiceMap"}
+        }
+    },
+
+    "TypeToChildServiceMap": {
+        "prototype": "Map",
+        "values": {
+            "entries": [
+                {"key": {"@": "Message"}, "value": {"%": "data/service/message-service.mjson"}},
+                {"key": {"@": "Person"}, "value": {"%": "data/service/person-service.mjson"}}
             ]
         }
     },
-    "kafkaService": {
-        "object": "data/service/kafka-service.mjson"
+
+    "Message": {
+        "object": "data/descriptors/message.mjson"
     },
-    "sequelizeService": {
-        "object": "data/service/sequelize-service.mjson"
+
+    "Person": {
+        "object": "data/descriptors/person.mjson"
     }
 }

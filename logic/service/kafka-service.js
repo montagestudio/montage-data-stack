@@ -64,63 +64,10 @@ exports.KafkaService = RawDataService.specialize( /** @lends KafkaService.protot
         }
     },
 
-    //
-    // Legacy Montage Data Mapping
-    //
-
-    // Get and query
-    fetchRawData: {
-        value: function(stream) {
-            var self = this,
-                action = 'fetchData',
-                query = stream.query,
-                service = self.referenceServiceForType(query.type);
-
-            return self._serialize(service).then(function(serviceJSON) {
-                return self._serialize(query).then(function(queryJSON) {
-                    return self._performOperation(action, queryJSON, serviceJSON).then(function(remoteDataJson) {
-                        return self._deserialize(remoteDataJson).then(function(remoteData) {
-                            stream.addData(remoteData);
-                            stream.dataDone();
-                        });
-                    });
-                });
-            });
-        }
-    },
-
-    // Create and update
-    saveRawData: {
-        value: function(rawData, object) {
-            var self = this,
-                action = 'saveDataObject',
-                type = self.objectDescriptorForObject(object),
-                service = self.referenceServiceForType(type);
-
-            return self._serialize(service).then(function(serviceJSON) {
-                return self._serialize(object).then(function(dataObjectJSON) {
-                    return self._performOperation(action, dataObjectJSON, serviceJSON).then(function(remoteObjectJSON) {
-                        return self._deserialize(remoteObjectJSON).then(function(remoteObject) {
-                            return self._mapRawDataToObject(remoteObject, object);
-                        });
-                    });
-                });
-            });
-        }
-    },
-
-    // Delete
-    deleteRawData: {
-        value: function(rawData, object) {
-            var self = this,
-                action = 'deleteDataObject',
-                type = self.objectDescriptorForObject(object),
-                service = self.referenceServiceForType(type);
-
-            return self._serialize(service).then(function(serviceJSON) {
-                return self._serialize(object).then(function(dataObjectJSON) {
-                    return self._performOperation(action, dataObjectJSON, serviceJSON);
-                });
+    _getOperationForTopic: {
+        value: function(topic) {
+            return new Promise(function(resolve, reject) {
+                resolve(type + dataType);
             });
         }
     },
@@ -131,7 +78,15 @@ exports.KafkaService = RawDataService.specialize( /** @lends KafkaService.protot
 
     _getTopicForOperation: {
         value: function(type, service) {
+
             return new Promise(function(resolve, reject) {
+            }
+        }
+    },
+
+    handleOperation: {
+        value: function (operation) {
+            var self = this;
 
                 // Cast type to montage object serailization
                 // TODO check with Thomas
