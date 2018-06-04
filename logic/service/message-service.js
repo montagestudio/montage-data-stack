@@ -112,7 +112,6 @@ exports.MessageService = HttpService.specialize(/** @lends MessageService.protot
     // Create and update
     saveRawData: {
         value: function (rawData, object) {
-            debugger;
             var self = this;
             // Update store
             return dataStore.save(rawData).then(function (rawData) {
