@@ -64,7 +64,6 @@ exports.Main = Component.specialize(/** @lends Main# */ {
                     myMsg.subject = "RE: You've got mail";
                     mainService.saveDataObject(myMsg).then(function () {
                         
-                        debugger;
                         assert('saveDataObject.created', typeof myMsg.created !== 'undefined', myMsg);
                         assert('saveDataObject.updated', typeof myMsg.updated === 'undefined', myMsg);
                         myMsg.text = "Add missing text";

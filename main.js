@@ -6,7 +6,7 @@ var Montage = require('montage');
 
 const PATH = require("path");
 const APP_PATH = process.env.APP_PATH || PATH.join(__dirname, ".");
-const APP_MAIN = process.env.APP_MAIN || 'data/main-worker.mjson';
+const APP_MAIN = process.env.APP_MAIN || 'data/main-raw-data-worker.mjson';
 
 // Get montage requie instance
 var montageRequire;
@@ -81,36 +81,15 @@ function getOperationFromData(data) {
 
 // Serialize data to query result or object
 // TODO wrap in operation or receive operation
-function getDataOperationResponse(queryResult, operation) {
-    // return serialize(queryResult);
-    // return mr.async('montage/data/service/data-operation').then(function (module) {
-    //     return module.deserialize(data, mr); 
-    // });
-    return getMontageRequire().then(function (mr) {
-        return mr.async('montage/data/service/data-operation').then(function (exports) {
-            var returnOperation = new exports.DataOperation();
-            returnOperation.type = returnOperationTypeForOperation(operation.type, exports.DataOperation.Type);
-            returnOperation.data = queryResult;
-            return serialize(returnOperation);
-        });
-    });
+function getDataOperationResponse(operation) {
+    return serialize(operation);
 }
 
-function returnOperationTypeForOperation(incomingType, enumeration, error) {
-    var isRead = incomingType.isRead,
-        isCreate = incomingType.isCreate,
-        isUpdate = incomingType.isUpdate,
-        isDelete = incomingType.isDelete;
 
-    return isRead && error   ? enumeration.ReadFailed :
-           isRead            ? enumeration.ReadCompleted :
-           isCreate && error ? enumeration.CreateFailed :
-           isCreate          ? enumeration.CreateCompleted :
-           isUpdate && error ? enumeration.UpdateFailed :
-           isUpdate          ? enumeration.UpdateCompleted :
-           isDelete && error ? enumeration.DeleteFailed :
-           isDelete          ? enumeration.DeleteCompleted :
-                               null;
+
+function returnOperationTypeForOperation(incomingType, enumeration, error) {
+    return error ? enumeration.failureTypeForType(incomingType) :
+                   enumeration.completionTypeForType(incomingType);
 }          
 
 
@@ -123,9 +102,11 @@ getMainService().then(function () {
 
 
 // Perform fetchData operation
-exports.handleOperation = function (operation) {
+exports.handleOperation = function (rawOperation) {
+    var operation;
     // Decode operation prior to get main service
-    return getOperationFromData(operation).then(function (operation) {
+    return getOperationFromData(rawOperation).then(function (mappedOperation) {
+        operation = mappedOperation;
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.fetchData', dataQuery);

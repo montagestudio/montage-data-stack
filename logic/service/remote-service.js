@@ -1,4 +1,5 @@
 var Montage = require("montage").Montage,
+    DataOperationType = require("montage/data/service/data-operation-type").DataOperationType,
     HttpService = require("montage/data/service/http-service").HttpService,
     ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
     RawDataService = require("montage/data/service/raw-data-service").RawDataService,
@@ -23,7 +24,6 @@ exports.AbstractRemoteService = {
             var self = this,
                 objectJSON = serialize(dataObject, require);
             return self._deserialize(objectJSON).then(function () {
-                //console.log('_serialize', objectJSON, dataObject);
                 return objectJSON;
             });
         }
@@ -32,8 +32,11 @@ exports.AbstractRemoteService = {
     _deserialize: {
         value: function (objectJSON) {
             return deserialize(objectJSON, require).then(function (dataObject) {
-                //console.log('_deserialize', objectJSON, dataObject);
                 return dataObject;
+            }).catch(function (e) {
+                console.log(JSON.parse(objectJSON));
+                console.warn(e);
+                debugger;
             });
         }
     },
@@ -53,16 +56,33 @@ exports.AbstractRemoteService = {
         value: function (stream) {
             var self = this,
                 query = stream.query,
-                operation = new DataOperation();
+                operation = new DataOperation(),
+                context = query.criteria.parameters || {};
+            
             
             operation.dataType = query.type.objectDescriptorInstanceModule;
             operation.criteria = query.criteria;
-            operation.type = DataOperation.Type.Read;
+            operation.type = DataOperationType.Read;
 
-            
             return self._performOperation(operation).then(function (remoteData) {
-                self.addRawData(stream, remoteData);
+                self.addRawData(stream, remoteData, operation.context);
                 self.rawDataDone(stream);
+            }).catch(function (error) {
+                console.warn("Error fetching data for " + query.type.name);
+                if (error.operation && error.operation.data) {
+                    // var parameters = operation.criteria && operation.criteria.parameters,
+                    //     layer = parameters && parameters.layer;
+
+                    // if (layer) {
+                    //     console.log(layer.name, parameters);
+                    // }
+                    
+                    // debugger;
+                    console.warn(error.operation.data.stack);
+                } else {
+                    console.warn(error);
+                }
+                
             }); 
         }
     },
@@ -72,11 +92,17 @@ exports.AbstractRemoteService = {
         value: function (rawData, object) {
             var self = this,
                 type = self.objectDescriptorForObject(object),
-                operation = new DataOperation();
+                operation = new DataOperation(),
+                rawKeys = Object.keys(rawData);
+
         
             operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
-            operation.type = this.rootService.createdDataObjects.has(object) ? DataOperation.Type.Create : DataOperation.Type.Update;
+            operation.type = this.rootService.createdDataObjects.has(object) ? DataOperationType.Create : DataOperationType.Update;
+            
+            if (!rawKeys.length) {
+                operation.data = object;
+            }
             return self._performOperation(operation).then(function (remoteObject) {
                 return self._mapRawDataToObject(remoteObject, object);
             });
@@ -92,7 +118,7 @@ exports.AbstractRemoteService = {
 
             operation.dataType = type.objectDescriptorInstanceModule;
             operation.data = rawData;
-            operation.type = DataOperation.Type.Delete;
+            operation.type = DataOperationType.Delete;
 
             return self._performOperation(operation);
         }
@@ -120,14 +146,13 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
 
     _performOperation: {
         value: function (operation) {
-            var body, url, headers, 
-                self = this;
-            
-            url = self._baseUrl;
-
-            headers = {
-                "Content-Type": "application/json"
-            };
+            var self = this,
+                headers = {
+                    "Content-Type": "application/json"
+                },
+                url = self._baseUrl,
+                body;
+                       
             return self._serialize(operation).then(function (operationJSON) {
                 body = JSON.stringify({
                     operation: operationJSON
@@ -136,10 +161,16 @@ exports.HttpRemoteService = HttpService.specialize(exports.AbstractRemoteService
             }).then(function (response) {
                 return self._deserialize(response);
             }).then(function (returnOperation) {
-                return returnOperation.data;
+                if (DataOperationType.isFailure(returnOperation.type)) {
+                    var error = new Error(returnOperation.type.action);
+                    error.operation = returnOperation;
+                    throw error;
+                } else {
+                    return returnOperation.data;
+                }
             });
         }  
-    } 
+    }
 });
 
 /*
