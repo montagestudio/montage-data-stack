@@ -6,7 +6,7 @@ var serialize = require("montage/core/serialization/serializer/montage-serialize
 var deserialize = require('montage/core/serialization/deserializer/montage-deserializer').deserialize;
 
 //var mainService = require("data/main.mjson").montageObject;
-var mainService = require("data/main-remote.mjson").montageObject;
+var mainService = require("data/main-remote-client.mjson").montageObject;
 //var mainService = require("data/service/remote-service.mjson").montageObject;
 
 var Message = require("data/descriptors/message.mjson").montageObject;

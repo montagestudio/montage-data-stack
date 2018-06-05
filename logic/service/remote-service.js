@@ -59,7 +59,6 @@ exports.AbstractRemoteService = {
                 operation = new DataOperation(),
                 context = query.criteria.parameters || {};
             
-            
             operation.dataType = query.type.objectDescriptorInstanceModule;
             operation.criteria = query.criteria;
             operation.type = DataOperationType.Read;
