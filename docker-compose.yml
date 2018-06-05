@@ -23,7 +23,7 @@ services:
       - ./scripts:/usr/src/app/scripts:ro
       
   # DataWorker 
-  # ExposRoLE: (Kafka|Http|WebSocket)->Kafka->(Kafka|Http|WebSocket)
+  # Role: (Kafka|Http|WebSocket)->Kafka->(Kafka|Http|WebSocket)
   data-worker:
     container_name: message-data-worker
     image: message-service:develop-SNAPSHOT
@@ -43,7 +43,7 @@ services:
       - ./scripts:/usr/src/app/scripts:ro
 
   # RemoteServerService or RemoteOperationCoordinator if enabled
-  # ExposRoLE: (Http|WebSocket)->(Kafka)->(Http|WebSocket)
+  # Role: (Http|WebSocket)->(Kafka)->(Http|WebSocket)
   data-coordinator:
     container_name: message-data-coordinator
     image: message-service:develop-SNAPSHOT
