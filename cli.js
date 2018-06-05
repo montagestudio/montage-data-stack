@@ -19,29 +19,20 @@ var main = require('./main');
 
 var command;
 if (program.handleOperation) {
-	command = main.handleOperation(program.handleOperation).then(function (result) {
-		console.log(result);
-		process.exit(0);
-	});
+	command = main.handleOperation(program.handleOperation);
 } else if (program.fetchData) {
-	command = main.fetchData(program.fetchData).then(function (result) {
-		console.log(result);
-		process.exit(0);
-	});
+	command = main.fetchData(program.fetchData);
 } else if (program.saveDataObject) {
-	command = main.saveDataObject(program.saveDataObject).then(function (result) {
-		console.log(result);
-		process.exit(0);
-	});
+	command = main.saveDataObject(program.saveDataObject);
 } else if (program.deleteDataObject) {
-	command = main.deleteDataObject(program.deleteDataObject).then(function (result) {
-		console.log(result);
-		process.exit(0);
-	});
+	command = main.deleteDataObject(program.deleteDataObject);
 }
 
 if (command) {
-	command.catch(function (err) {
+	command.then(function (result) {
+		console.log(JSON.stringify(result, null, 4));
+		process.exit(0);
+	}).catch(function (err) {
 		console.error(err.stack || err);
 		process.exit(1);
 	});	
