@@ -1,4 +1,5 @@
 language: node_js
+dist: trusty
 cache:
   directories:
     - node_modules
@@ -17,7 +18,7 @@ before_script:
   - npm prune
 script:
   - npm run lint
-  - npm run test
+  - npm run test:composed
   - npm run test:nsp
 after_failure:
   - docker ps

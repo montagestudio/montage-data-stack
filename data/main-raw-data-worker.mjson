@@ -11,7 +11,7 @@
         "prototype": "Map",
         "values": {
             "entries": [
-                {"key": {"@": "Message"}, "value": {"%": "data/service/message-service.mjson"}},
+                {"key": {"@": "Message"}, "value": {"%": "data/service/message-service-worker.mjson"}},
                 {"key": {"@": "Person"}, "value": {"%": "data/service/person-service.mjson"}}
             ]
         }

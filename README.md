@@ -11,8 +11,8 @@
 
 1. Install 
 ```
-git clone git@github.com:user/repo.git
-cd repo
+git clone -b develop git@github.com:montagestudio/montage-data-stack.git
+cd montage-data-stack
 npm install
 ```
 
@@ -69,8 +69,7 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
 ### Npm commands
  
  - `lint`: jshint . 
- - `start:docker`: ./start-docker.sh
- - `start:node`: node index.js 
+ - `start:node`: node .  
  - `test`: mocha test --timeout 10000 --exit 
  - `integration`: concurrently \npm run serve:test\ \npm run open:test\ 
  - `doc`: concurrently \npm run serve:doc\ \npm run open:doc\ 
@@ -82,7 +81,6 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
  - `open:pgadmin`: open http://localhost:5001 
  - `open:pgheho`: open http://localhost:5002
  - `open:kafka-manager`: open http://localhost:5003 
- - `start:node`: node init 
  - `start:swarm`: docker swarm init 
  - `start:stack`: docker stack deploy -c docker-compose.yml 'message-stack' 
  - `stop:stack`: docker stack rm 'message-stack' 
@@ -90,9 +88,12 @@ See swagger Documentation: [swagger.yml](./doc/swagger.yml).
  - `build`: npm run build:docker 
  - `build:docker`: docker build . -t message:develop-SNAPSHOT 
  - `build:compose`: docker-compose build 
- - `start:compose`: docker-compose up -d 
+ - `start:compose`: docker-compose up
  - `stop:compose`: docker-compose down
- - 
+ - `start:composed`: ./start-docker.sh
+ - `stop:composed`: ./stop-docker.sh
+ 
+ 
 ## License
 
 

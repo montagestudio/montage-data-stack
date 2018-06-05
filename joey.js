@@ -1,4 +1,3 @@
-
 var joey = require("joey");
 
 const APP_PUBLIC_PATH = process.env.APP_PUBLIC_PATH || __dirname;
@@ -11,7 +10,6 @@ var app = joey.log()
 	.favicon()
 	.cors()
 	.parseQuery();
-
 
 // Load service controller
 var main = require('./main');

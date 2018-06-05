@@ -56,34 +56,74 @@ function deserialize(data) {
 
 // Deserialize data to query or object
 // TODO wrap in operation or receive operation
-function getOperationFromData(data) {
-    return new Promise(function (resolve, reject) {
-        // Falsy data should fail
-        if (!data) {
-            reject('Missing Operation Data');
+function getOperationFromData(data, type) {
+    return getMontageRequire().then(function (mr) {
+        return mr.async('montage/data/service/data-operation').then(function (module) {
+            var DataOperation = module.DataOperation;
+            type = type || 'operation';
+            return new Promise(function (resolve, reject) {
+                // Falsy data should fail
+                if (!data) {
+                    reject('Missing Operation Data');
+                    return;
+                }
 
-        // Process data oterwise
-        } else {
-
-            // Handle bad JSON Operation and pre-decode for deserializer
-            try {
-            
-                // Resolve Data
-                resolve(deserialize(data));
-            } catch (error) {
-
-                // Handle error
-                reject(error);
-            }   
-        }
+                // Handle bad JSON Operation and pre-decode for deserializer
+                try {
+                    // Resolve Data
+                    resolve(deserialize(data));
+                } catch (error) {
+                    // Handle error
+                    reject(error);
+                }   
+            }).then(function (montageObject) {
+                return new Promise(function (resolve, reject) {
+                    if (montageObject instanceof DataOperation) {
+                        resolve(montageObject);
+                    } else {
+                        var operation = new DataOperation()
+                        if (type === 'fetchData') {
+                            var query = montageObject;
+                            operation.type = DataOperation.Type.Read;
+                            operation.dataType = query.type.objectDescriptorInstanceModule;
+                            operation.criteria = query.criteria;
+                            resolve(operation);
+                        } else if (type === 'saveDataObject') {
+                            // TODO check
+                            var dataObject = operation;
+                            operation.type = DataOperation.Type.Save;
+                            operation.dataType = dataObject.type.objectDescriptorInstanceModule;
+                            operation.data = dataObject.data;
+                            resolve(operation);
+                        } else if (type === 'deleteDataObject') {
+                            // TODO check
+                            var dataObject = operation;
+                            operation.type = DataOperation.Type.Delete;
+                            operation.dataType = dataObject.type.objectDescriptorInstanceModule;
+                            operation.data = dataObject.data;
+                            resolve(operation);
+                        } else {
+                            reject('Unknow Operation Data Type: ' + type);
+                        } 
+                    }     
+                });
+            });
+        });
     });
 }
 
 // Serialize data to query result or object
 // TODO wrap in operation or receive operation
-function getDataOperationResponse(queryResult) {
-    return serialize(queryResult);
+function getDataOperationResponse(operation) {
+    return serialize(operation);
 }
+
+
+
+function returnOperationTypeForOperation(incomingType, enumeration, error) {
+    return error ? enumeration.failureTypeForType(incomingType) :
+                   enumeration.completionTypeForType(incomingType);
+}          
 
 // Initialize Main Service.
 console.time('MainService');
@@ -92,14 +132,31 @@ getMainService().then(function () {
     console.log("MainService Ready!");  
 });
 
+
 // Perform fetchData operation
-exports.fetchData = function (query) {
+exports.handleOperation = function (rawOperation) {
+    var operation;
     // Decode operation prior to get main service
-    return getOperationFromData(query).then(function (dataQuery) {
+    return getOperationFromData(rawOperation).then(function (mappedOperation) {
+        operation = mappedOperation;
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.fetchData', dataQuery);
-            return mainService.fetchData(dataQuery).then(function (queryResult) {
+            return mainService.handleOperation(operation).then(function (queryResult) {
+                return getDataOperationResponse(queryResult, operation);
+            });
+        });
+    });
+};
+
+// Perform fetchData operation
+exports.fetchData = function (query) {
+    // Decode operation prior to get main service
+    return getOperationFromData(query, 'fetchData').then(function (dataQuery) {
+        // Disptach Operation on main service
+        return getMainService().then(function (mainService) {
+            //console.log('mainService.fetchData', dataQuery);
+            return mainService.handleOperation(dataQuery).then(function (queryResult) {
                 return getDataOperationResponse(queryResult);
             });
         });
@@ -109,11 +166,11 @@ exports.fetchData = function (query) {
 // Perform deleteDataObject operation
 exports.deleteDataObject = function (data) {
     // Decode operation prior to get main service
-    return getOperationFromData(data).then(function (dataObject) {
+    return getOperationFromData(data, 'deleteDataObject').then(function (dataObject) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.deleteDataObject', dataObject);
-            return mainService.deleteDataObject(dataObject).then(function (result) {
+            return mainService.handleOperation(dataObject).then(function (result) {
                 return getDataOperationResponse(dataObject);
             });
         });
@@ -123,11 +180,11 @@ exports.deleteDataObject = function (data) {
 // Perform saveDataObject operation
 exports.saveDataObject = function (data) {
     // Decode operation prior to get main service
-    return getOperationFromData(data).then(function (dataObject) {
+    return getOperationFromData(data, 'saveDataObject').then(function (dataObject) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.saveDataObject', dataObject);
-            return mainService.saveDataObject(dataObject).then(function (result) {
+            return mainService.handleOperation(dataObject).then(function (result) {
                 return getDataOperationResponse(dataObject);
             });
         });

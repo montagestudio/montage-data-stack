@@ -12,9 +12,9 @@
         "object": "data/mapping/person-mapping.mjson"
     },
     "root": {
-        "prototype": "logic/service/remote-service",
+        "prototype": "logic/service/message-service",
         "values": {
-            "name": "HttpRemoteService",
+            "name": "MessageService",
             "types": [
                  {"@": "Message"},
                  {"@": "Person"}
@@ -22,15 +22,6 @@
             "mappings": [
                  {"@": "MessageMapping"},
                  {"@": "PersonMapping"}
-            ],
-            "serviceReferences": [
-                 {
-                    "module": {"%": "logic/service/message-service.mjson"}, 
-                    "types": [
-                         {"@": "Message"},
-                         {"@": "Person"}
-                    ]
-                 }
             ]
         }
     }

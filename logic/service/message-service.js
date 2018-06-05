@@ -115,7 +115,7 @@ exports.MessageService = HttpService.specialize(/** @lends MessageService.protot
             var self = this;
             // Update store
             return dataStore.save(rawData).then(function (rawData) {
-                return self._mapRawDataToObject(rawData, object);
+                return object ? self._mapRawDataToObject(rawData, object) : rawData;
             });
         }
     },

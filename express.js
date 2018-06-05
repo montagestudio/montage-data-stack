@@ -64,10 +64,19 @@ function resultToHttpResponse(response, event, result) {
     response.json(result);
 }
 
+app.route("/api/data/operation")
+    .post(function (req, res, next) {
+
+        // GET operation
+        main.handleOperation(req.body.operation).then(function (result) {
+          resultToHttpResponse(res, 'operation', result);
+        }).catch(next);
+    });
+
 app.route("/api/data")
     .get(function (req, res, next) {
         // GET query
-        main.fetchData(req.query.query).then(function (result) {
+        main.fetchData(req.query.operation).then(function (result) {
           resultToHttpResponse(res, 'fetchData', result);
         }).catch(next);
     });
@@ -155,6 +164,13 @@ socketServer.on('connection', function(client) {
           socketLog('unsubscribe');
             socketSubscriptions.delete(client.id);
         });
+    });
+
+    client.on('operation', function (data, callback) {
+      socketLog('operation', typeof data);
+      main.handleOperation(data).then(function (result) {
+        resultToSocketResponse(client, 'operation', result, callback);
+      }, socketError);
     });
 
     client.on('fetchData', function (data, callback) {

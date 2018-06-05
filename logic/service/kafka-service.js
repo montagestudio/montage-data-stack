@@ -1,5 +1,5 @@
 /* jshint node: true */
-var RawDataService = require("montage/data/service/raw-data-service").RawDataService,
+var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorker,
     Promise = require("montage/core/promise").Promise;
 
 var kafka = require('kafka-node');
@@ -16,7 +16,7 @@ var Offset = kafka.Offset;
  * @class
  * @extends external:RawDataService
  */
-exports.KafkaService = RawDataService.specialize( /** @lends KafkaService.prototype */ {
+exports.KafkaService = RawDataWorker.specialize( /** @lends KafkaService.prototype */ {
 
     options: {
         value: {
@@ -63,18 +63,37 @@ exports.KafkaService = RawDataService.specialize( /** @lends KafkaService.protot
 
         }
     },
+    //
+    // Kafka Mapping
+    //
 
-    _getOperationForTopic: {
-        value: function(topic) {
+    _getTopicForOperation: {
+        value: function(type, dataType) {
             return new Promise(function(resolve, reject) {
                 resolve(type + dataType);
             });
         }
     },
 
-    //
-    // Kafka Mapping
-    //
+    _getOperationForTopic: {
+        value: function(operation) {
+            return new Promise(function(resolve, reject) {
+                resolve(type + dataType);
+            });
+        }
+    },
+
+
+    _produceDataOperation: {
+        value: function(type, data, dataType, partition, attributes) {
+            //return Promise.reject('Not Implemented');
+            // TOTO produce operation
+            var self = this;
+            return self._getTopicForOperation(type, dataType).then(function(topic) {
+                return self.produceMessage(topic, data, partition, attributes);
+            });
+        }
+    },
 
     _getTopicForOperation: {
         value: function(type, service) {
@@ -88,37 +107,37 @@ exports.KafkaService = RawDataService.specialize( /** @lends KafkaService.protot
         value: function (operation) {
             var self = this;
 
-                // Cast type to montage object serailization
-                // TODO check with Thomas
-                type = (typeof type === 'string' ? type : type.type);
-                    service = (typeof service === 'string' ? service : service.root.prototype);
+            return this.super(operation).then(function () {
 
-                resolve(type + service);
-            });
-        }
-    },
+                // TODO operation
+                // Operation.Read to Operation.ReadUpdate
+                var resultOperation = {};
 
-    _performOperation: {
-        value: function(type, data, service, partition, attributes) {
-            //return Promise.reject('Not Implemented');
-            // TOTO produce operation
-            var self = this;
-            return self._getTopicForOperation(type, service).then(function(topic) {
-                return self.produceMessage(topic, data, partition, attributes);
+                return self._getOperationForTopic(resultOperation).then(function(topic) {
+                    return self.produceMessage(topic, resultOperation, partition, attributes);
+                });  
             });
         }
     },
 
     _consumeOperations: {
         // optionals: partition,maxNum
-        value: function(type, service, partition, maxNum) {
+        value: function(type, dataType, partition, maxNum) {
 
             // return Promise.reject('Not Implemented');
             // operations = operation.Type + descriptor.Type = topics
             var self = this;
-            return self._getTopicForOperation(type, service).then(function(topic) {
+            return self._getTopicForOperation(type, dataType).then(function(topic) {
                 return self.consumeTopic(topic, partition, {
                     // TODO dispatch on rootService
+                    onMessage: function (topic, message) {
+                        // TODO operation
+                        return self.handleOperation(operation).then(function () {
+
+                        }).catch(function (err) {
+                            // return self.produceMessage(topic, resultOperation, partition, attributes);
+                        });   
+                    }
                 }, maxNum);
             });
         }

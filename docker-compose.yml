@@ -1,88 +1,86 @@
 version: '2'
-
 services:
-  # RemoteServerService
-  data-remote-service:
-    container_name: message-service
+      
+  # RawDataWorker
+  # Role: (Http|WebSocket)->RawDataService<-(Http|WebSocket)
+  raw-data-worker:
+    container_name: message-raw-data-worker
     image: message-service:develop-SNAPSHOT
+    build:
+      context: ./
     environment:
-      APP_MAIN: 'data/main-data-coordinator.mjson'
-      #APP_MAIN: 'data/main-raw-data-worker.mjson'
-    # Exposed port
+      APP_MAIN: 'data/main-raw-data-worker.mjson'
     ports:
       - "8080:8080"
     networks:
       - frontend
       - backend
+    volumes:
+      - ./node_modules:/usr/src/app/node_modules:ro
+      - ./data:/usr/src/app/data:ro
+      - ./logic:/usr/src/app/logic:ro
+      - ./ui:/usr/src/app/ui:ro
+      - ./scripts:/usr/src/app/scripts:ro
+      
+  # DataWorker 
+  # Role: (Kafka|Http|WebSocket)->Kafka->(Kafka|Http|WebSocket)
+  data-worker:
+    container_name: message-data-worker
+    image: message-service:develop-SNAPSHOT
     build:
       context: ./
-    volumes:
-      - ./:/usr/src/app/:ro
-      - ./data:/usr/src/app/data:ro
-      - ./logic:/usr/src/app/logix:ro
-      - ./ui:/usr/src/app/ui:ro
-      - ./scripts:/usr/src/app/scripts:ro
-      
-  # DataWorker - DataKafkaWorker
-  data-service:
-    container_name: message-data-service-cli
-    image: message-service:develop-SNAPSHOT
     environment:
       APP_MAIN: 'data/main-data-worker.mjson'
-    # Exposed port
     ports:
-      - "8081:8080"
+      - "8081:8081"
     networks:
       - frontend
       - backend
     volumes:
-      - ./:/usr/src/app/:ro
+      - ./node_modules:/usr/src/app/node_modules:ro
       - ./data:/usr/src/app/data:ro
-      - ./logic:/usr/src/app/logix:ro
-      - ./ui:/usr/src/app/ui:ro
+      - ./logic:/usr/src/app/logic:ro
       - ./scripts:/usr/src/app/scripts:ro
-      
-  # RawDataWorker - Message 
-  raw-data-service:
-    container_name: message-raw-data-service-cli
+
+  # RemoteServerService or RemoteOperationCoordinator if enabled
+  # Role: (Http|WebSocket)->(Kafka)->(Http|WebSocket)
+  data-coordinator:
+    container_name: message-data-coordinator
     image: message-service:develop-SNAPSHOT
+    build:
+      context: ./
     environment:
-      APP_MAIN: 'data/main-raw-data-worker.mjson'
+      APP_MAIN: 'data/main-data-coordinator.mjson'
     # Exposed port
     ports:
-      - "8082:8080"
+      - "8082:8082"
     networks:
       - frontend
       - backend
     volumes:
-      - ./:/usr/src/app/:ro
+      - ./node_modules:/usr/src/app/node_modules:ro
       - ./data:/usr/src/app/data:ro
-      - ./logic:/usr/src/app/logix:ro
-      - ./ui:/usr/src/app/ui:ro
+      - ./logic:/usr/src/app/logic:ro
       - ./scripts:/usr/src/app/scripts:ro
 
   # ScheduledWorker
-  data-cli:
-    container_name: message-service-cli
+  # Role: (CLI)->RawDataService->(Kafka|Http|WebSocket)
+  message-cli:
+    container_name: message-data-cli
     image: message-service:develop-SNAPSHOT
     networks:
       - frontend
       - backend
     volumes:
-      - ./:/usr/src/app/:ro
-    entrypoint: ["node"]
-    command: ["cli", "--fetchData", '{ "root": { "prototype": "montage/data/model/data-query", "values": { "criteria": {}, "orderings": [], "prefetchExpressions": null, "typeModule": { "%": "data/descriptors/message.mjson" } } } }']
-    volumes:
-      - ./:/usr/src/app/:ro
+      - ./node_modules:/usr/src/app/node_modules:ro
       - ./data:/usr/src/app/data:ro
-      - ./logic:/usr/src/app/logix:ro
-      - ./ui:/usr/src/app/ui:ro
+      - ./logic:/usr/src/app/logic:ro
       - ./scripts:/usr/src/app/scripts:ro
-   
-
+    entrypoint: ["node"]
+    # TODO operation
+    command: ["cli", "--fetchData", '{ "root": { "prototype": "montage/data/model/data-query", "values": { "criteria": {}, "orderings": [], "prefetchExpressions": null, "typeModule": { "%": "data/descriptors/message.mjson" } } } }']
 
 # Default network
 networks:
   frontend:
   backend:
-
