@@ -19,7 +19,7 @@ var main = require('./main');
 
 var command;
 if (program.handleOperation) {
-	command = main.fetchData(program.handleOperation).then(function (result) {
+	command = main.handleOperation(program.handleOperation).then(function (result) {
 		console.log(result);
 		process.exit(0);
 	});
