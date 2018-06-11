@@ -84,7 +84,7 @@
     "stop:swarm": "docker swarm leave --force",
     "build": "npm run build:compose",
     "build:docker": "docker build . -t message-service:develop-SNAPSHOT",
-    "build:compose": "docker-compose build",
+    "build:compose": "docker-compose build --no-cache",
     "start:composed": "./start-docker.sh",
     "stop:composed": "./stop-docker.sh",
     "start:compose": "docker-compose up",

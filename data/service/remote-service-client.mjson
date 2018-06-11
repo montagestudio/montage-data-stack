@@ -1,16 +1,5 @@
 {
-    "Message": {
-        "object": "data/descriptors/message.mjson"
-    },
-    "MessageMapping": {
-        "object": "data/mapping/message-mapping.mjson"
-    },
-    "Person": {
-        "object": "data/descriptors/person.mjson"
-    },
-    "PersonMapping": {
-        "object": "data/mapping/person-mapping.mjson"
-    },
+    
     "root": {
         "prototype": "logic/service/remote-service",
         "values": {
@@ -24,5 +13,17 @@
                  {"@": "PersonMapping"}
             ]
         }
+    },
+    "Message": {
+        "object": "data/descriptors/message.mjson"
+    },
+    "MessageMapping": {
+        "object": "data/mapping/message-mapping.mjson"
+    },
+    "Person": {
+        "object": "data/descriptors/person.mjson"
+    },
+    "PersonMapping": {
+        "object": "data/mapping/person-mapping.mjson"
     }
 }

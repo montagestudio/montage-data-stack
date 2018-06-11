@@ -71,42 +71,12 @@ function getOperationFromData(data, type) {
                 // Handle bad JSON Operation and pre-decode for deserializer
                 try {
                     // Resolve Data
+                    console.log('data', data)
                     resolve(deserialize(data));
                 } catch (error) {
                     // Handle error
                     reject(error);
                 }   
-            }).then(function (montageObject) {
-                return new Promise(function (resolve, reject) {
-                    if (montageObject instanceof DataOperation) {
-                        resolve(montageObject);
-                    } else {
-                        var operation = new DataOperation()
-                        if (type === 'fetchData') {
-                            var query = montageObject;
-                            operation.type = DataOperation.Type.Read;
-                            operation.dataType = query.type.objectDescriptorInstanceModule;
-                            operation.criteria = query.criteria;
-                            resolve(operation);
-                        } else if (type === 'saveDataObject') {
-                            // TODO check
-                            var dataObject = operation;
-                            operation.type = DataOperation.Type.Save;
-                            operation.dataType = dataObject.type.objectDescriptorInstanceModule;
-                            operation.data = dataObject.data;
-                            resolve(operation);
-                        } else if (type === 'deleteDataObject') {
-                            // TODO check
-                            var dataObject = operation;
-                            operation.type = DataOperation.Type.Delete;
-                            operation.dataType = dataObject.type.objectDescriptorInstanceModule;
-                            operation.data = dataObject.data;
-                            resolve(operation);
-                        } else {
-                            reject('Unknow Operation Data Type: ' + type);
-                        } 
-                    }     
-                });
             });
         });
     });
@@ -156,7 +126,7 @@ exports.fetchData = function (query) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.fetchData', dataQuery);
-            return mainService.handleOperation(dataQuery).then(function (queryResult) {
+            return mainService.fetchData(dataQuery).then(function (queryResult) {
                 return getDataOperationResponse(queryResult);
             });
         });
@@ -170,7 +140,7 @@ exports.deleteDataObject = function (data) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.deleteDataObject', dataObject);
-            return mainService.handleOperation(dataObject).then(function (result) {
+            return mainService.deleteDataObject(dataObject).then(function (result) {
                 return getDataOperationResponse(dataObject);
             });
         });
@@ -184,7 +154,7 @@ exports.saveDataObject = function (data) {
         // Disptach Operation on main service
         return getMainService().then(function (mainService) {
             //console.log('mainService.saveDataObject', dataObject);
-            return mainService.handleOperation(dataObject).then(function (result) {
+            return mainService.saveDataObject(dataObject).then(function (result) {
                 return getDataOperationResponse(dataObject);
             });
         });

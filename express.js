@@ -112,7 +112,6 @@ function broadcastsResultSubscriptions(client, event, result) {
   });
 }
 
-
 function resultToSocketResponse(client, event, result, callback) {
 
     if (callback) {
@@ -145,6 +144,8 @@ socketServer.on('connection', function(client) {
     // Add socketSubscriptions
     client.on('subscribe', function(data) {
         socketLog('subscribe');
+
+        // data filter
 
         // Get current subscription data or create
         var currentData = socketSubscriptions.get(client.id) || {

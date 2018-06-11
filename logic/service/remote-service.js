@@ -36,7 +36,6 @@ exports.AbstractRemoteService = {
             }).catch(function (e) {
                 console.log(JSON.parse(objectJSON));
                 console.warn(e);
-                debugger;
             });
         }
     },
@@ -62,6 +61,13 @@ exports.AbstractRemoteService = {
             operation.dataType = query.type.objectDescriptorInstanceModule;
             operation.criteria = query.criteria;
             operation.type = DataOperationType.Read;
+
+            self._serialize(query).then(function (mopntageJson) {
+                self._deserialize(mopntageJson).then(function (montageObject) {
+                    operation;
+                    mopntageJson;
+                });
+            });
 
             return self._performOperation(operation).then(function (remoteData) {
                 self.addRawData(stream, remoteData, operation.context);

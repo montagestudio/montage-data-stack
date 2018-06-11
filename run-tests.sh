@@ -1,6 +1,7 @@
 #!/bin/bash
 
 npm run clean:compose
+npm run build:compose
 npm run stop:composed
 npm run start:composed
 echo "Wait for services to start (30sec)"

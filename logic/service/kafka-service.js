@@ -59,7 +59,7 @@ exports.KafkaService = RawDataWorker.specialize( /** @lends KafkaService.prototy
 
     constructor: {
         value: function KafkaService() {
-
+            console.log('Hello KafkaService');
 
         }
     },

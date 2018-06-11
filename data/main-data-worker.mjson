@@ -1,27 +1,29 @@
 {
     "root": {
-        "prototype": "montage/data/service/raw-data-worker",
+        "prototype": "logic/service/kafka-service",
         "values": {
-            "name": "KafkaRawDataWorker",
-            "types": {"@": "TypeToChildServiceMap"}
-        }
-    },
-
-    "TypeToChildServiceMap": {
-        "prototype": "Map",
-        "values": {
-            "entries": [
-                {"key": {"@": "Message"}, "value": {"%": "data/service/message-service-worker.mjson"}},
-                {"key": {"@": "Person"}, "value": {"%": "data/service/person-service.mjson"}}
+            "name": "KafkaDataWorker",
+            "types": [
+                 {"@": "Message"},
+                 {"@": "Person"}
+            ],
+            "mappings": [
+                 {"@": "MessageMapping"},
+                 {"@": "PersonMapping"}
             ]
         }
     },
-
     "Message": {
         "object": "data/descriptors/message.mjson"
     },
 
+    "MessageMapping": {
+        "object": "data/mapping/message-mapping.mjson"
+    },
     "Person": {
         "object": "data/descriptors/person.mjson"
+    },
+    "PersonMapping": {
+        "object": "data/mapping/person-mapping.mjson"
     }
 }

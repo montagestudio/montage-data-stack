@@ -8,21 +8,28 @@
   <script>  
     var socket = io.connect('http://localhost:8080');
     socket.on('connect', function(data) {
-        socket.emit('subscribe');
+        socket.emit('subscribe', {});
 
         var query = {
-            "root": {
-              "prototype": "montage/data/model/data-query",
-              "values": {
-                "criteria": {},
-                "orderings": [],
-                "prefetchExpressions": null,
-                "typeModule": {
-                  "%": "data/descriptors/message.mjson"
-                }
+          "criteria": {
+            "prototype": "montage/core/criteria",
+            "values": {
+              "expression": "",
+              "parameters": {}
+            }
+          },
+          "root": {
+            "prototype": "montage/data/model/data-query",
+            "values": {
+              "criteria": {"@": "criteria"},
+              "orderings": [],
+              "prefetchExpressions": null,
+              "typeModule": {
+                "%": "data/descriptors/message.mjson"
               }
             }
-          };
+          }
+        };
         socket.emit('fetchData', query, function(data) {
             console.log(data);
         });

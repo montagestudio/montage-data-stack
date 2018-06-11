@@ -2,7 +2,7 @@ version: '2'
 services:
       
   # RawDataWorker
-  # Role: (Http|WebSocket)->RawDataService<-(Http|WebSocket)
+  # Role: (Http|WebSocket)->RawDataService->(Http|WebSocket)
   raw-data-worker:
     container_name: message-raw-data-worker
     image: message-service:develop-SNAPSHOT
