@@ -1,6 +1,3 @@
-/**
- * @module ui/main.reel
- */
 var Component = require("montage/ui/component").Component;
 var DataQuery = require("montage/data/model/data-query").DataQuery;
 var Criteria = require("montage/core/criteria").Criteria;
@@ -9,7 +6,8 @@ var serialize = require("montage/core/serialization/serializer/montage-serialize
 var deserialize = require('montage/core/serialization/deserializer/montage-deserializer').deserialize;
 
 //var mainService = require("data/main.mjson").montageObject;
-var mainService = require("data/main-remote.mjson").montageObject;
+var mainService = require("data/main-remote-client.mjson").montageObject;
+//var mainService = require("data/service/remote-service.mjson").montageObject;
 
 var Message = require("data/descriptors/message.mjson").montageObject;
 var Person = require("data/descriptors/person.mjson").montageObject;
@@ -65,7 +63,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
                     var myMsg = mainService.createDataObject(dataType);
                     myMsg.subject = "RE: You've got mail";
                     mainService.saveDataObject(myMsg).then(function () {
-
+                        
                         assert('saveDataObject.created', typeof myMsg.created !== 'undefined', myMsg);
                         assert('saveDataObject.updated', typeof myMsg.updated === 'undefined', myMsg);
                         myMsg.text = "Add missing text";

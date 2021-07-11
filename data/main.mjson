@@ -9,6 +9,6 @@
         }
     },
     "messageService": {
-        "object": "data/service/message-service.mjson"
+        "object": "data/service/message-service-client.mjson"
     }
 }

@@ -1,0 +1,8 @@
+{
+    "root": {
+        "prototype": "logic/service/message-service",
+        "values": {
+            "name": "MessageService"
+        }
+    }
+}
